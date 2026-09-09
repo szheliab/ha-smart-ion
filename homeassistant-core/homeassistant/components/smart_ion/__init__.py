@@ -1,15 +1,15 @@
 """Smart iON CS-8 integration."""
 
-from smart_ion import SmartIonCS8
-
 from homeassistant.components.modbus_connection import async_get_unit
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 
+from smart_ion import SmartIonCS8
+
 from .const import CONF_CONNECTION, CONF_UNIT_ID
 from .coordinator import SmartIonConfigEntry, SmartIonCoordinator
 
-PLATFORMS = [Platform.BINARY_SENSOR, Platform.SWITCH]
+PLATFORMS = [Platform.SENSOR, Platform.SWITCH]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: SmartIonConfigEntry) -> bool:

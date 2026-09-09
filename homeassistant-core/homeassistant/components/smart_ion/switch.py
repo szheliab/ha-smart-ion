@@ -49,16 +49,12 @@ class SmartIonSwitch(SmartIonEntity, SwitchEntity):
 
     @property
     def is_on(self) -> bool | None:
-        return getattr(self.coordinator.device.relay_outputs, self.entity_description.field)
+        return getattr(self.coordinator.device.relays, self.entity_description.field)
 
     async def async_turn_on(self, **kwargs: object) -> None:
-        await self.coordinator.device.relay_outputs.write(
-            self.entity_description.field, True
-        )
+        await self.coordinator.device.relays.write(self.entity_description.field, True)
         await self.coordinator.async_request_refresh()
 
     async def async_turn_off(self, **kwargs: object) -> None:
-        await self.coordinator.device.relay_outputs.write(
-            self.entity_description.field, False
-        )
+        await self.coordinator.device.relays.write(self.entity_description.field, False)
         await self.coordinator.async_request_refresh()

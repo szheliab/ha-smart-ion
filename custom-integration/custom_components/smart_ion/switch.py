@@ -6,7 +6,8 @@ from homeassistant.components.switch import SwitchEntity, SwitchEntityDescriptio
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .coordinator import SmartIonConfigEntry, SmartIonCoordinator
+from .coordinator import SmartIonCoordinator
+from .data import SmartIonConfigEntry
 from .entity import SmartIonEntity
 
 
@@ -18,7 +19,9 @@ class SmartIonSwitchDescription(SwitchEntityDescription):
 
 
 DESCRIPTIONS = tuple(
-    SmartIonSwitchDescription(key=f"relay_{index}", name=f"Relay {index}", field=f"relay_{index}")
+    SmartIonSwitchDescription(
+        key=f"relay_{index}", name=f"Relay {index}", field=f"relay_{index}"
+    )
     for index in range(1, 9)
 )
 
@@ -29,7 +32,10 @@ async def async_setup_entry(
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up relay entities."""
-    async_add_entities(SmartIonSwitch(entry.runtime_data, description) for description in DESCRIPTIONS)
+    coordinator = entry.runtime_data.coordinator
+    async_add_entities(
+        SmartIonSwitch(coordinator, description) for description in DESCRIPTIONS
+    )
 
 
 class SmartIonSwitch(SmartIonEntity, SwitchEntity):
@@ -37,18 +43,20 @@ class SmartIonSwitch(SmartIonEntity, SwitchEntity):
 
     entity_description: SmartIonSwitchDescription
 
-    def __init__(self, coordinator: SmartIonCoordinator, description: SmartIonSwitchDescription) -> None:
+    def __init__(
+        self, coordinator: SmartIonCoordinator, description: SmartIonSwitchDescription
+    ) -> None:
         super().__init__(coordinator, description.key)
         self.entity_description = description
 
     @property
     def is_on(self) -> bool | None:
-        return getattr(self.coordinator.device.relay_outputs, self.entity_description.field)
+        return getattr(self.coordinator.device.relays, self.entity_description.field)
 
     async def async_turn_on(self, **kwargs: object) -> None:
-        await self.coordinator.device.relay_outputs.write(self.entity_description.field, True)
+        await self.coordinator.device.relays.write(self.entity_description.field, True)
         await self.coordinator.async_request_refresh()
 
     async def async_turn_off(self, **kwargs: object) -> None:
-        await self.coordinator.device.relay_outputs.write(self.entity_description.field, False)
+        await self.coordinator.device.relays.write(self.entity_description.field, False)
         await self.coordinator.async_request_refresh()

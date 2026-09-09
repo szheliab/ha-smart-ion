@@ -5,24 +5,50 @@ on:
   pull_request:
 
 jobs:
-  validate:
+  device-library:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: device-library
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: python -m pip install -e ".[cli]" "pytest>=8" "pytest-asyncio>=0.24" ruff
+      - name: Test
+        run: python -m pytest
+      - name: Lint
+        run: python -m ruff check .
+
+  homeassistant-core-syntax:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Validate scaffold
+      - name: Compile
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          import tomllib
+          python -m py_compile homeassistant-core/homeassistant/components/smart_ion/*.py
+          python -m py_compile homeassistant-core/tests/components/smart_ion/*.py
+      - name: Validate manifest/strings JSON
+        run: |
+          python -m json.tool homeassistant-core/homeassistant/components/smart_ion/manifest.json
+          python -m json.tool homeassistant-core/homeassistant/components/smart_ion/strings.json
 
-          root = Path('.').resolve()
-          assert (root / 'README.md').exists()
-          assert (root / 'docs' / 'smart-ion-registers.yaml').exists()
-          with open(root / 'pyproject.toml', 'rb') as fh:
-              data = tomllib.load(fh)
-          assert data['project']['name'] == 'ha-smart-ion'
-          PY
-
+  custom-integration-syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile
+        run: python -m py_compile custom-integration/custom_components/smart_ion/*.py
+      - name: Validate manifest/strings JSON
+        run: |
+          python -m json.tool custom-integration/custom_components/smart_ion/manifest.json
+          python -m json.tool custom-integration/custom_components/smart_ion/strings.json
+          python -m json.tool custom-integration/hacs.json

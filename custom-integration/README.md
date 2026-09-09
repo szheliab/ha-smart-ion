@@ -1,21 +1,58 @@
-# Smart iOn CS-8 custom integration
+# Smart iON CS-8 — Home Assistant custom integration
 
-Vendorized Home Assistant custom integration for **Smart iOn CS-8**.
+[![hacs][hacs-shield]][hacs]
 
-This package is intended for community testing and HACS-style installation. It includes English and Ukrainian translations.
+A HACS-installable custom integration for **Smart iON CS-8** 8-channel Modbus
+relay/contactor boards, ready to test today without waiting on any unreleased
+Home Assistant core changes.
 
-## Supported transports
+Unlike [`../homeassistant-core`](../homeassistant-core), this integration
+vendorizes the [`smart-ion-modbus`](../device-library) device model
+(`custom_components/smart_ion/device.py`) and owns its Modbus connection
+directly via the [`modbus-connection`](https://pypi.org/project/modbus-connection/)
+library — it does not depend on Home Assistant's shared `modbus_connection`
+integration.
 
-- TCP / network Modbus adapters
-- Serial RS485 connections
+## Features
 
-## Connection defaults
+- Config flow supporting both TCP / RTU-over-TCP gateways (e.g. Waveshare
+  RS485-to-Ethernet adapters) and direct serial (RS-485/USB) connections.
+- 8 `switch` entities per board — one per relay coil.
+- 1 diagnostic `sensor` entity — the board's own configured Modbus address.
+- One config entry per physical CS-8 board, so multiple boards behind the
+  same gateway (different Modbus unit addresses) are each configured
+  independently.
 
-- TCP port: `502`
-- Slave: `7`
-- Serial baudrate: `9600`
-- Serial bytesize: `8`
-- Serial parity: `N`
-- Serial stopbits: `1`
-- Timeout: `5`
-- Delay: `2`
+## Installation
+
+### HACS (recommended)
+
+1. Add this repository as a custom repository in HACS (category:
+   integration), or open it directly if listed.
+2. Install "Smart iON CS-8".
+3. Restart Home Assistant.
+4. Go to **Settings → Devices & Services → Add Integration** and search for
+   "Smart iON CS-8".
+
+### Manual
+
+Copy `custom_components/smart_ion` into your Home Assistant `config/custom_components`
+directory and restart Home Assistant.
+
+## Configuration
+
+All configuration is done through the UI. Pick a transport:
+
+- **TCP / RTU-over-TCP** — host, port (default `502`), framer (`rtu` for
+  RTU-over-TCP gateways, `socket` for native Modbus TCP), unit address
+  (default `7`), timeout, and connect delay.
+- **Serial** — device path, baud rate, data bits, parity, stop bits, unit
+  address, timeout, and connect delay.
+
+## Development
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the devcontainer-based development
+workflow (based on [`ludeeus/integration_blueprint`](https://github.com/ludeeus/integration_blueprint)).
+
+[hacs-shield]: https://img.shields.io/badge/HACS-Custom-orange.svg
+[hacs]: https://github.com/hacs/integration

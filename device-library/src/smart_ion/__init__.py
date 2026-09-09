@@ -1,18 +1,12 @@
-"""Smart iOn CS-8 device library."""
+"""Smart iON CS-8 device library.
 
-from .models import (
-    DeviceProfile,
-    ModbusConnection,
-    RegisterEntity,
-    SmartIonRegistryError,
-    load_device_profile,
-)
+An asynchronous, transport-independent Python library for the **Smart iON
+CS-8** 8-channel Modbus relay/contactor board, built on top of
+``modbus_connection``'s device-modelling framework.
+"""
 
-__all__ = [
-    "DeviceProfile",
-    "ModbusConnection",
-    "RegisterEntity",
-    "SmartIonRegistryError",
-    "load_device_profile",
-]
+from .device import SmartIonCS8
+from .relays import RELAY_COUNT, Relays
+from .settings import Settings
 
+__all__ = ["RELAY_COUNT", "Relays", "Settings", "SmartIonCS8"]

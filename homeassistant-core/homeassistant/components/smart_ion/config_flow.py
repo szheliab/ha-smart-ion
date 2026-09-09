@@ -3,9 +3,10 @@
 from typing import Any
 
 import voluptuous as vol
-from modbus_connection import ModbusError
-
-from homeassistant.components.modbus_connection import ConnectionNotReady, async_get_unit
+from homeassistant.components.modbus_connection import (
+    ConnectionNotReady,
+    async_get_unit,
+)
 from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
 from homeassistant.helpers.selector import (
     ConfigEntrySelector,
@@ -14,6 +15,7 @@ from homeassistant.helpers.selector import (
     NumberSelectorConfig,
     NumberSelectorMode,
 )
+from modbus_connection import ModbusError
 
 from .const import CONF_CONNECTION, CONF_UNIT_ID, DEFAULT_UNIT_ID, DOMAIN
 
@@ -51,4 +53,6 @@ class SmartIonConfigFlow(ConfigFlow, domain=DOMAIN):
                 return self.async_create_entry(
                     title=f"Smart iON CS-8 ({unit_id})", data=user_input
                 )
-        return self.async_show_form(step_id="user", data_schema=STEP_USER, errors=errors)
+        return self.async_show_form(
+            step_id="user", data_schema=STEP_USER, errors=errors
+        )

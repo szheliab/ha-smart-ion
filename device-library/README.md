@@ -1,24 +1,94 @@
-# Smart iOn CS-8 device library
-The library validates duplicate `unique_id` values and loads the current register map from the YAML source.
+# `smart-ion-modbus` Python library
 
-## Validation
+[![CI](https://github.com/szheliab/ha-smart-ion/actions/workflows/ci.yml/badge.svg?branch=develop&event=push)](https://github.com/szheliab/ha-smart-ion/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/smart-ion-modbus.svg)](https://pypi.org/project/smart-ion-modbus/)
+[![Python](https://img.shields.io/pypi/pyversions/smart-ion-modbus.svg)](https://pypi.org/project/smart-ion-modbus/)
+[![License](https://img.shields.io/github/license/szheliab/ha-smart-ion.svg)](LICENSE)
 
-- 1 sensor entity for holding register `0x100`
-- 8 switch entities for coils `0x000` through `0x007`
+`smart-ion-modbus` is an asynchronous, transport-independent Python library for
+communicating with **Smart iON CS-8** 8-channel relay/contactor boards over
+Modbus.
 
-## Supported entities
+The library is kept independent of any home automation platform, so it can be
+used by any Python application or project that needs to read or drive one or
+more Smart iON CS-8 boards.
 
-- `../docs/smart-ion-registers.yaml`
+## Purpose and scope
 
-## Source of truth
+`smart-ion-modbus` models exactly what a Smart iON CS-8 board exposes over
+Modbus:
 
-- CLI inspection entry point
-- device registry helper
-- YAML-backed register loader
-- typed connection and register models
+* the eight switched relay outputs (coils `0x000`-`0x007`), read and written
+  with function codes 0x01/0x05,
+* the board's own configured Modbus station address (holding register
+  `0x100`), read with function code 0x03.
 
-## Contents
+It does **not** create or own the Modbus transport. Applications using the
+library provide a
+[`modbus_connection.ModbusUnit`](https://home-assistant-libs.github.io/modbus-connection/)
+and may use any backend supported by `modbus-connection` (pymodbus, tmodbus,
+...). Several boards on the same RS-485 line or RTU-over-TCP gateway are
+modelled as one `SmartIonCS8` instance per unit (station) address, sharing one
+underlying connection.
 
-Standalone Modbus device library for the **Smart iOn CS-8**.
+An example script `script/query.py` shows how to build an application that
+connects to a board over Modbus/TCP, Modbus RTU-over-TCP, or a direct serial
+port, prints its relay states and configured address, and can toggle a relay.
 
+## Supported boards
 
+| Board             | Outputs | Register map                                      |
+| :---------------- | :-----: | :-------------------------------------------------- |
+| Smart iON CS-8     |    8    | Coils `0x000`-`0x007`, holding register `0x100`    |
+
+## Data provided by the library
+
+`smart-ion-modbus` provides, per board:
+
+* the on/off state of each of the eight relay outputs,
+* the board's own configured Modbus station address,
+* validated writes to turn any relay output on or off.
+
+## Installation
+
+```bash
+pip install smart-ion-modbus
+# or, to also pull in a concrete Modbus backend for the CLI script:
+pip install "smart-ion-modbus[cli]"
+```
+
+## Usage
+
+```python
+from modbus_connection import ModbusTcpParams
+from modbus_connection.tmodbus import ModbusConnection
+
+from smart_ion import SmartIonCS8
+
+connection = ModbusConnection(ModbusTcpParams(host="192.168.0.171", port=4196, framer="rtu"))
+board = SmartIonCS8(connection.for_unit(7))  # unit/station address 7
+
+await board.async_update()
+print(board.relay_state(1), board.settings.address)
+await board.async_set_relay(1, True)
+```
+
+## Development
+
+```bash
+script/run_checks.sh   # install deps, lint, type-compile, test, build
+script/format_code.sh   # format + auto-fix with ruff
+```
+
+Tests run against the in-memory mock backend shipped with `modbus-connection`;
+no real board or server is required.
+
+## Branching and releases
+
+`develop` is the integration branch; `main` is release-only and only accepts
+pull requests from the local `develop` branch. Releasing a GitHub Release
+publishes the package to PyPI with the release tag as the version.
+
+## License
+
+Apache License 2.0, see [`LICENSE`](LICENSE).

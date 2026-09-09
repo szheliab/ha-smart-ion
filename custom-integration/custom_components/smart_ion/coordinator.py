@@ -1,22 +1,22 @@
 """Coordinator for Smart iON CS-8 live state."""
 
+from __future__ import annotations
+
 import logging
 
-from modbus_connection import ModbusError
-
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from modbus_connection import ModbusError
 
-from .const import DOMAIN, FAST_SCAN_INTERVAL
+from .const import DOMAIN, SCAN_INTERVAL
+from .data import SmartIonConfigEntry
 from .device import SmartIonCS8
 
 _LOGGER = logging.getLogger(__name__)
-type SmartIonConfigEntry = ConfigEntry[SmartIonCoordinator]
 
 
 class SmartIonCoordinator(DataUpdateCoordinator[SmartIonCS8]):
-    """Poll relay and discrete input state."""
+    """Poll relay and settings state for one Smart iON CS-8 board."""
 
     def __init__(
         self, hass: HomeAssistant, entry: SmartIonConfigEntry, device: SmartIonCS8
@@ -26,7 +26,7 @@ class SmartIonCoordinator(DataUpdateCoordinator[SmartIonCS8]):
             _LOGGER,
             config_entry=entry,
             name=DOMAIN,
-            update_interval=FAST_SCAN_INTERVAL,
+            update_interval=SCAN_INTERVAL,
         )
         self.device = device
 
@@ -34,5 +34,7 @@ class SmartIonCoordinator(DataUpdateCoordinator[SmartIonCS8]):
         try:
             await self.device.async_update()
         except ModbusError as err:
-            raise UpdateFailed(f"Error communicating with Smart iON CS-8: {err}") from err
+            raise UpdateFailed(
+                f"Error communicating with Smart iON CS-8: {err}"
+            ) from err
         return self.device
