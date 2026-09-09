@@ -60,6 +60,7 @@ def _build_connection(data: dict[str, Any]) -> PymodbusConnection:
 async def async_setup_entry(hass: HomeAssistant, entry: SmartIonConfigEntry) -> bool:
     """Set up a Smart iON CS-8 board from a config entry."""
     connection = _build_connection(entry.data)
+    await connection.connect()
     unit = connection.for_unit(int(entry.data[CONF_UNIT_ID]))
     device = SmartIonCS8(unit)
     coordinator = SmartIonCoordinator(hass, entry, device)

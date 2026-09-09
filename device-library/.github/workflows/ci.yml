@@ -16,6 +16,9 @@ jobs:
   quality:
     name: Quality checks
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: device-library
 
     steps:
       - name: Check out repository
