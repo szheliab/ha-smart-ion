@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "smart-ion-device-library"
+version = "0.1.0"
+description = "Standalone device library for Smart iOn CS-8 Modbus devices"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["PyYAML>=6.0.1"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+

@@ -1,0 +1,28 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate scaffold
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import tomllib
+
+          root = Path('.').resolve()
+          assert (root / 'README.md').exists()
+          assert (root / 'docs' / 'smart-ion-registers.yaml').exists()
+          with open(root / 'pyproject.toml', 'rb') as fh:
+              data = tomllib.load(fh)
+          assert data['project']['name'] == 'ha-smart-ion'
+          PY
+

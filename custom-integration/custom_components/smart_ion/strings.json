@@ -1,0 +1,20 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "connection_entry_id": "Modbus connection",
+          "unit_id": "Modbus unit"
+        },
+        "description": "Select the Modbus Connection entry and CS-8 unit address.",
+        "data_description": {
+          "connection_entry_id": "The Modbus Connection entry that provides the transport.",
+          "unit_id": "The CS-8 Modbus station address (default: 7)."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to communicate with the selected Modbus unit."
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "domain": "smart_ion",
+  "name": "Smart iON CS-8",
+  "codeowners": ["@szheliab"],
+  "config_flow": true,
+  "dependencies": ["modbus_connection"],
+  "documentation": "https://www.home-assistant.io/integrations/smart_ion",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "loggers": ["modbus_connection", "smart_ion"],
+  "quality_scale": "bronze",
+  "requirements": ["smart-ion-device-library==0.1.0"]
+}

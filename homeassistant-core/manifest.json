@@ -1,0 +1,12 @@
+{
+  "domain": "smart_ion",
+  "name": "Smart iOn CS-8",
+  "codeowners": ["@serhii"],
+  "config_flow": true,
+  "dependencies": ["modbus"],
+  "documentation": "https://github.com/szheliab/ha-smart-ion",
+  "iot_class": "local_polling",
+  "integration_type": "hub",
+  "requirements": [],
+  "version": "0.1.0"
+}
