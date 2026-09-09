@@ -1,18 +1,53 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
-name = "smart-ion-device-library"
-version = "0.1.0"
-description = "Standalone device library for Smart iOn CS-8 Modbus devices"
+name = "smart-ion-modbus"
+version = "0.0.0"
+description = "Read and control a Smart iON CS-8 relay board over Modbus."
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = ["PyYAML>=6.0.1"]
+license = { text = "Apache-2.0" }
+authors = [{ name = "Smart iON Modbus contributors" }]
+keywords = ["modbus", "smart-ion", "cs-8", "relay"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Topic :: Home Automation",
+]
+# Protocol + the device-modelling framework (modbus_connection.model). The
+# caller injects a ModbusUnit built from whichever backend they choose.
+dependencies = ["modbus-connection>=4.8.1,<5"]
 
-[tool.setuptools]
-package-dir = {"" = "src"}
+[project.optional-dependencies]
+# Concrete backend for the script/query.py CLI (pip install smart-ion-modbus[cli]).
+cli = ["modbus-connection[tmodbus]>=4.8.1,<5"]
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[project.urls]
+Homepage = "https://github.com/szheliab/ha-smart-ion"
 
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.24",
+    # Tests run against the in-memory mock backend that ships with
+    # modbus-connection (its pytest plugin is auto-registered); no real
+    # backend or server is needed.
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/smart_ion"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py312"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true

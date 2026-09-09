@@ -3,9 +3,10 @@
 from typing import Any
 
 import voluptuous as vol
-from modbus_connection import ModbusError
-
-from homeassistant.components.modbus_connection import ConnectionNotReady, async_get_unit
+from homeassistant.components.modbus_connection import (
+    ConnectionNotReady,
+    async_get_unit,
+)
 from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
 from homeassistant.helpers.selector import (
     ConfigEntrySelector,
@@ -14,18 +15,19 @@ from homeassistant.helpers.selector import (
     NumberSelectorConfig,
     NumberSelectorMode,
 )
+from modbus_connection import ModbusError
 
 from .const import CONF_CONNECTION, CONF_UNIT_ID, DEFAULT_UNIT_ID, DOMAIN
 
 STEP_USER = vol.Schema(
     {
         vol.Required(CONF_CONNECTION): ConfigEntrySelector(
-            ConfigEntrySelectorConfig(integration="modbus_connection")
+            ConfigEntrySelectorConfig(integration="modbus_connection"),
         ),
         vol.Required(CONF_UNIT_ID, default=DEFAULT_UNIT_ID): NumberSelector(
-            NumberSelectorConfig(min=1, max=247, step=1, mode=NumberSelectorMode.BOX)
+            NumberSelectorConfig(min=1, max=247, step=1, mode=NumberSelectorMode.BOX),
         ),
-    }
+    },
 )
 
 
@@ -35,8 +37,10 @@ class SmartIonConfigFlow(ConfigFlow, domain=DOMAIN):
     VERSION = 1
 
     async def async_step_user(
-        self, user_input: dict[str, Any] | None = None
+        self,
+        user_input: dict[str, Any] | None = None,
     ) -> ConfigFlowResult:
+        """Let the user pick a Modbus Connection entry and unit address."""
         errors: dict[str, str] = {}
         if user_input is not None:
             unit_id = int(user_input[CONF_UNIT_ID])
@@ -49,6 +53,11 @@ class SmartIonConfigFlow(ConfigFlow, domain=DOMAIN):
                 errors["base"] = "cannot_connect"
             else:
                 return self.async_create_entry(
-                    title=f"Smart iON CS-8 ({unit_id})", data=user_input
+                    title=f"Smart iON CS-8 ({unit_id})",
+                    data=user_input,
                 )
-        return self.async_show_form(step_id="user", data_schema=STEP_USER, errors=errors)
+        return self.async_show_form(
+            step_id="user",
+            data_schema=STEP_USER,
+            errors=errors,
+        )
