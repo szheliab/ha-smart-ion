@@ -15,15 +15,17 @@ PLATFORMS = [Platform.SENSOR, Platform.SWITCH]
 async def async_setup_entry(hass: HomeAssistant, entry: SmartIonConfigEntry) -> bool:
     """Set up a CS-8 from a selected Modbus Connection unit."""
     unit = async_get_unit(
-        hass, entry.data[CONF_CONNECTION], int(entry.data[CONF_UNIT_ID])
+        hass,
+        entry.data[CONF_CONNECTION],
+        int(entry.data[CONF_UNIT_ID]),
     )
     coordinator = SmartIonCoordinator(hass, entry, SmartIonCS8(unit))
     await coordinator.async_config_entry_first_refresh()
     entry.runtime_data = coordinator
     entry.async_on_unload(
         unit.on_connection_lost(
-            lambda: hass.config_entries.async_schedule_reload(entry.entry_id)
-        )
+            lambda: hass.config_entries.async_schedule_reload(entry.entry_id),
+        ),
     )
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True

@@ -19,8 +19,12 @@ class SmartIonCoordinator(DataUpdateCoordinator[SmartIonCS8]):
     """Poll the relay outputs and configured address of one board."""
 
     def __init__(
-        self, hass: HomeAssistant, entry: SmartIonConfigEntry, device: SmartIonCS8
+        self,
+        hass: HomeAssistant,
+        entry: SmartIonConfigEntry,
+        device: SmartIonCS8,
     ) -> None:
+        """Initialize the coordinator for one Smart iON CS-8 board."""
         super().__init__(
             hass,
             _LOGGER,
@@ -34,7 +38,6 @@ class SmartIonCoordinator(DataUpdateCoordinator[SmartIonCS8]):
         try:
             await self.device.async_update()
         except ModbusError as err:
-            raise UpdateFailed(
-                f"Error communicating with Smart iON CS-8: {err}"
-            ) from err
+            msg = f"Error communicating with Smart iON CS-8: {err}"
+            raise UpdateFailed(msg) from err
         return self.device

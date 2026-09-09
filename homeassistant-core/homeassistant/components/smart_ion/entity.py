@@ -13,6 +13,7 @@ class SmartIonEntity(CoordinatorEntity[SmartIonCoordinator]):
     _attr_has_entity_name = True
 
     def __init__(self, coordinator: SmartIonCoordinator, key: str) -> None:
+        """Initialize the shared entity attributes for one Smart iON CS-8."""
         super().__init__(coordinator)
         self._attr_unique_id = f"{coordinator.config_entry.entry_id}_{key}"
         self._attr_device_info = DeviceInfo(

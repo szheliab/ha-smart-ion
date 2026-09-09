@@ -2,19 +2,23 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock, patch
 
 import pytest
+from homeassistant.config_entries import SOURCE_USER
+from homeassistant.data_entry_flow import FlowResultType
 from modbus_connection import ModbusError
 
 from homeassistant.components.smart_ion.const import DOMAIN
-from homeassistant.config_entries import SOURCE_USER
-from homeassistant.core import HomeAssistant
-from homeassistant.data_entry_flow import FlowResultType
+
+if TYPE_CHECKING:
+    from homeassistant.core import HomeAssistant
 
 
 async def test_user_flow_creates_entry(
-    hass: HomeAssistant, mock_setup_entry: None
+    hass: HomeAssistant,
+    mock_setup_entry: None,  # noqa: ARG001
 ) -> None:
     """A reachable unit creates a config entry."""
     unit = AsyncMock()
@@ -24,7 +28,8 @@ async def test_user_flow_creates_entry(
         return_value=unit,
     ):
         result = await hass.config_entries.flow.async_init(
-            DOMAIN, context={"source": SOURCE_USER}
+            DOMAIN,
+            context={"source": SOURCE_USER},
         )
         result = await hass.config_entries.flow.async_configure(
             result["flow_id"],
@@ -41,7 +46,9 @@ async def test_user_flow_creates_entry(
 
 @pytest.mark.parametrize("error", [ModbusError("timed out"), OSError("no route")])
 async def test_user_flow_cannot_connect(
-    hass: HomeAssistant, mock_setup_entry: None, error: Exception
+    hass: HomeAssistant,
+    mock_setup_entry: None,  # noqa: ARG001
+    error: Exception,
 ) -> None:
     """An unreachable unit shows a form with an error instead of aborting."""
     unit = AsyncMock()
@@ -51,7 +58,8 @@ async def test_user_flow_cannot_connect(
         return_value=unit,
     ):
         result = await hass.config_entries.flow.async_init(
-            DOMAIN, context={"source": SOURCE_USER}
+            DOMAIN,
+            context={"source": SOURCE_USER},
         )
         result = await hass.config_entries.flow.async_configure(
             result["flow_id"],

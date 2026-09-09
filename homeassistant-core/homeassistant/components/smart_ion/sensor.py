@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from homeassistant.components.sensor import (
     SensorEntity,
@@ -10,11 +11,14 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.const import EntityCategory
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .coordinator import SmartIonConfigEntry, SmartIonCoordinator
 from .entity import SmartIonEntity
+
+if TYPE_CHECKING:
+    from homeassistant.core import HomeAssistant
+    from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+
+    from .coordinator import SmartIonConfigEntry, SmartIonCoordinator
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -36,7 +40,7 @@ DESCRIPTIONS = (
 
 
 async def async_setup_entry(
-    hass: HomeAssistant,
+    hass: HomeAssistant,  # noqa: ARG001
     entry: SmartIonConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
@@ -52,7 +56,9 @@ class SmartIonSensor(SmartIonEntity, SensorEntity):
     entity_description: SmartIonSensorDescription
 
     def __init__(
-        self, coordinator: SmartIonCoordinator, description: SmartIonSensorDescription
+        self,
+        coordinator: SmartIonCoordinator,
+        description: SmartIonSensorDescription,
     ) -> None:
         """Initialize the sensor."""
         super().__init__(coordinator, description.key)

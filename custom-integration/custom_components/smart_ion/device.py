@@ -1,4 +1,5 @@
-"""Vendorized Smart iON CS-8 device model.
+"""
+Vendorized Smart iON CS-8 device model.
 
 This mirrors ``device-library/src/smart_ion`` so the custom integration is
 self-contained and can be installed via HACS without a separate PyPI release.
@@ -7,8 +8,12 @@ Keep this file in sync with the device library if the register map changes.
 
 from __future__ import annotations
 
-from modbus_connection import ModbusUnit
+from typing import TYPE_CHECKING
+
 from modbus_connection.model import Component, ComponentGroup, coil, integer
+
+if TYPE_CHECKING:
+    from modbus_connection import ModbusUnit
 
 RELAY_COUNT = 8
 
@@ -36,6 +41,7 @@ class SmartIonCS8:
     """An 8-channel Smart iON CS-8 Modbus relay/contactor board."""
 
     def __init__(self, unit: ModbusUnit) -> None:
+        """Build the device model over the given unit; performs no I/O."""
         self.relays = Relays(unit)
         self.settings = Settings(unit)
         self._components = ComponentGroup(unit, (self.relays, self.settings))
@@ -44,14 +50,16 @@ class SmartIonCS8:
         """Refresh relay and settings state with as-few-as-possible reads."""
         await self._components.async_update()
 
-    async def async_set_relay(self, index: int, value: bool) -> None:
+    async def async_set_relay(self, index: int, *, value: bool) -> None:
         """Turn one relay (1-8) on or off."""
         if not 1 <= index <= RELAY_COUNT:
-            raise ValueError(f"relay index must be 1-{RELAY_COUNT}, got {index}")
-        await self.relays.write(f"relay_{index}", value)
+            msg = f"relay index must be 1-{RELAY_COUNT}, got {index}"
+            raise ValueError(msg)
+        await self.relays.write(f"relay_{index}", value=value)
 
     def relay_state(self, index: int) -> bool | None:
         """Return the last-known state of one relay (1-8)."""
         if not 1 <= index <= RELAY_COUNT:
-            raise ValueError(f"relay index must be 1-{RELAY_COUNT}, got {index}")
+            msg = f"relay index must be 1-{RELAY_COUNT}, got {index}"
+            raise ValueError(msg)
         return getattr(self.relays, f"relay_{index}")

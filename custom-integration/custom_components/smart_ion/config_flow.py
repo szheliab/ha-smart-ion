@@ -89,7 +89,8 @@ class SmartIonConfigFlow(ConfigFlow, domain=DOMAIN):
     VERSION = 1
 
     async def async_step_user(
-        self, user_input: dict[str, Any] | None = None
+        self,
+        user_input: dict[str, Any] | None = None,  # noqa: ARG002
     ) -> ConfigFlowResult:
         """Let the user choose how the board is reached."""
         return self.async_show_menu(step_id="user", menu_options=["tcp", "serial"])

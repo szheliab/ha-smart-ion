@@ -1,14 +1,18 @@
 """Relay switch entities."""
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .coordinator import SmartIonCoordinator
-from .data import SmartIonConfigEntry
 from .entity import SmartIonEntity
+
+if TYPE_CHECKING:
+    from homeassistant.core import HomeAssistant
+    from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+
+    from .coordinator import SmartIonCoordinator
+    from .data import SmartIonConfigEntry
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -27,7 +31,7 @@ DESCRIPTIONS = tuple(
 
 
 async def async_setup_entry(
-    hass: HomeAssistant,
+    hass: HomeAssistant,  # noqa: ARG001
     entry: SmartIonConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
@@ -46,17 +50,27 @@ class SmartIonSwitch(SmartIonEntity, SwitchEntity):
     def __init__(
         self, coordinator: SmartIonCoordinator, description: SmartIonSwitchDescription
     ) -> None:
+        """Initialize the relay switch entity."""
         super().__init__(coordinator, description.key)
         self.entity_description = description
 
     @property
     def is_on(self) -> bool | None:
+        """Return true if the relay is energized."""
         return getattr(self.coordinator.device.relays, self.entity_description.field)
 
     async def async_turn_on(self, **kwargs: object) -> None:
-        await self.coordinator.device.relays.write(self.entity_description.field, True)
+        """Energize the relay."""
+        del kwargs
+        await self.coordinator.device.relays.write(
+            self.entity_description.field, value=True
+        )
         await self.coordinator.async_request_refresh()
 
     async def async_turn_off(self, **kwargs: object) -> None:
-        await self.coordinator.device.relays.write(self.entity_description.field, False)
+        """De-energize the relay."""
+        del kwargs
+        await self.coordinator.device.relays.write(
+            self.entity_description.field, value=False
+        )
         await self.coordinator.async_request_refresh()

@@ -8,22 +8,26 @@ exactly as a board would.
 
 from __future__ import annotations
 
-from collections.abc import Generator
+from typing import TYPE_CHECKING
 from unittest.mock import patch
 
 import pytest
+from tests.common import MockConfigEntry
 
 from homeassistant.components.smart_ion.const import DOMAIN
-from homeassistant.core import HomeAssistant
 
-from tests.common import MockConfigEntry
+if TYPE_CHECKING:
+    from collections.abc import Generator
+
+    from homeassistant.core import HomeAssistant
 
 
 @pytest.fixture
 def mock_setup_entry() -> Generator[None]:
     """Prevent actual entry setup from running during config-flow tests."""
     with patch(
-        "homeassistant.components.smart_ion.async_setup_entry", return_value=True
+        "homeassistant.components.smart_ion.async_setup_entry",
+        return_value=True,
     ):
         yield
 

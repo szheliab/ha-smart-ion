@@ -2,16 +2,19 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock, patch
 
 from homeassistant.config_entries import ConfigEntryState
-from homeassistant.core import HomeAssistant
 
-from tests.common import MockConfigEntry
+if TYPE_CHECKING:
+    from homeassistant.core import HomeAssistant
+    from tests.common import MockConfigEntry
 
 
 async def test_setup_and_unload(
-    hass: HomeAssistant, mock_config_entry: MockConfigEntry
+    hass: HomeAssistant,
+    mock_config_entry: MockConfigEntry,
 ) -> None:
     """Setting up borrows a unit and reads it once; unloading tears it down cleanly."""
     unit = AsyncMock()

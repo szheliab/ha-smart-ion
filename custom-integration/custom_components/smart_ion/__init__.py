@@ -1,4 +1,5 @@
-"""The Smart iON CS-8 custom integration.
+"""
+The Smart iON CS-8 custom integration.
 
 Vendorizes the ``smart_ion`` device model (see ``device.py``) so this
 integration is self-contained and testable via HACS today, without depending
@@ -8,10 +9,9 @@ It owns its Modbus connection directly and closes it on unload.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.const import CONF_HOST, CONF_PORT, Platform
-from homeassistant.core import HomeAssistant
 from modbus_connection import ModbusSerialParams, ModbusTcpParams
 from modbus_connection.pymodbus import PymodbusConnection
 
@@ -31,6 +31,9 @@ from .const import (
 from .coordinator import SmartIonCoordinator
 from .data import SmartIonConfigEntry, SmartIonRuntimeData
 from .device import SmartIonCS8
+
+if TYPE_CHECKING:
+    from homeassistant.core import HomeAssistant
 
 PLATFORMS = [Platform.SENSOR, Platform.SWITCH]
 
