@@ -43,8 +43,12 @@ STEP_TCP = vol.Schema(
         vol.Required(CONF_UNIT_ID, default=DEFAULT_UNIT_ID): vol.All(
             int, vol.Range(min=1, max=247)
         ),
-        vol.Optional(CONF_TIMEOUT, default=DEFAULT_TIMEOUT): int,
-        vol.Optional(CONF_DELAY, default=DEFAULT_DELAY): int,
+        vol.Optional(CONF_TIMEOUT, default=DEFAULT_TIMEOUT): vol.All(
+            vol.Coerce(float), vol.Range(min=0)
+        ),
+        vol.Optional(CONF_DELAY, default=DEFAULT_DELAY): vol.All(
+            vol.Coerce(float), vol.Range(min=0)
+        ),
     }
 )
 
@@ -58,8 +62,12 @@ STEP_SERIAL = vol.Schema(
         vol.Required(CONF_UNIT_ID, default=DEFAULT_UNIT_ID): vol.All(
             int, vol.Range(min=1, max=247)
         ),
-        vol.Optional(CONF_TIMEOUT, default=DEFAULT_TIMEOUT): int,
-        vol.Optional(CONF_DELAY, default=DEFAULT_DELAY): int,
+        vol.Optional(CONF_TIMEOUT, default=DEFAULT_TIMEOUT): vol.All(
+            vol.Coerce(float), vol.Range(min=0)
+        ),
+        vol.Optional(CONF_DELAY, default=DEFAULT_DELAY): vol.All(
+            vol.Coerce(float), vol.Range(min=0)
+        ),
     }
 )
 
@@ -111,8 +119,13 @@ class SmartIonConfigFlow(ConfigFlow, domain=DOMAIN):
 
             connection = _build_connection(transport, user_input)
             try:
+                await connection.connect()
                 await connection.for_unit(unit_id).read_coils(0, 1)
-            except (ModbusError, OSError, ValueError):
+            except ModbusError:
+                errors["base"] = "cannot_connect"
+            except OSError:
+                errors["base"] = "cannot_connect"
+            except ValueError:
                 errors["base"] = "cannot_connect"
             else:
                 return self.async_create_entry(

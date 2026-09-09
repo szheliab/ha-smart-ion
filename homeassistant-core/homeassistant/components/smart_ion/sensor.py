@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING
 from homeassistant.components.sensor import (
     SensorEntity,
     SensorEntityDescription,
-    SensorStateClass,
 )
 from homeassistant.const import EntityCategory
 
@@ -34,7 +33,6 @@ DESCRIPTIONS = (
         name="Modbus address",
         field="address",
         entity_category=EntityCategory.DIAGNOSTIC,
-        state_class=SensorStateClass.MEASUREMENT,
     ),
 )
 

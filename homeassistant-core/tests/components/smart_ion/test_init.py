@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, Mock, patch
 
 from homeassistant.config_entries import ConfigEntryState
 
@@ -20,7 +20,7 @@ async def test_setup_and_unload(
     unit = AsyncMock()
     unit.read_coils = AsyncMock(return_value=[False] * 8)
     unit.read_holding_registers = AsyncMock(return_value=[7])
-    unit.on_connection_lost = AsyncMock(return_value=lambda: None)
+    unit.on_connection_lost = Mock(return_value=lambda: None)
 
     with patch("homeassistant.components.smart_ion.async_get_unit", return_value=unit):
         assert await hass.config_entries.async_setup(mock_config_entry.entry_id)
