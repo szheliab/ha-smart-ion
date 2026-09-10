@@ -54,6 +54,7 @@ DESCRIPTIONS: tuple[SmartIonSensorDescription, ...] = (
         field="uptime",
         source="diagnostics",
         native_unit_of_measurement="s",
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SmartIonSensorDescription(
         key="request_count",
