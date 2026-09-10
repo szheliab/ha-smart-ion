@@ -92,7 +92,10 @@ def _build_connection(transport: str, data: dict[str, Any]) -> PymodbusConnectio
             host=data[CONF_HOST], port=data[CONF_PORT], framer=data[CONF_FRAMER]
         )
     return PymodbusConnection(
-        params, timeout=data[CONF_TIMEOUT], connect_delay=data[CONF_DELAY]
+        params,
+        timeout=data[CONF_TIMEOUT],
+        message_spacing=data[CONF_DELAY],
+        connect_delay=data[CONF_DELAY],
     )
 
 
