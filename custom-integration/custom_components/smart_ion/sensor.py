@@ -117,6 +117,26 @@ DESCRIPTIONS: tuple[SmartIonSensorDescription, ...] = (
         native_unit_of_measurement="ms",
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
+    *(
+        SmartIonSensorDescription(
+            key=f"autooff_relay_{index}_raw",
+            name=f"AutoOff Relay {index} Raw",
+            field=f"autooff_relay_{index}_raw",
+            source="settings",
+            entity_category=EntityCategory.DIAGNOSTIC,
+        )
+        for index in range(1, 9)
+    ),
+    *(
+        SmartIonSensorDescription(
+            key=f"delay_relay_{index}_raw",
+            name=f"Delay Relay {index} Raw",
+            field=f"delay_relay_{index}_raw",
+            source="settings",
+            entity_category=EntityCategory.DIAGNOSTIC,
+        )
+        for index in range(1, 9)
+    ),
 )
 
 

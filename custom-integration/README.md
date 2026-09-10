@@ -21,6 +21,7 @@ integration.
 - 8 `binary_sensor` entities per board — one per discrete input.
 - diagnostic/runtime/settings `sensor` entities for module identity, firmware,
   uptime, request/error counters, and settings registers (`0x0100`-`0x0104`).
+- 2 writable `number` entities for debounce duration and long-press threshold.
 - One config entry per physical CS-8 board, so multiple boards behind the
   same gateway (different Modbus unit addresses) are each configured
   independently.

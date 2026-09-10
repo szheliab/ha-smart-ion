@@ -35,6 +35,7 @@ register the domain brand assets per
   - module name, serial number, firmware version,
   - uptime and request/error counters,
   - module address, baud-rate code, data-format code, debounce and long-press settings.
+- 2 `number` entities — writable debounce duration and long-press threshold.
 
 ## Config flow
 

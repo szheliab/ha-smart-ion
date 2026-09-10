@@ -49,6 +49,53 @@
       "already_configured": "This Smart iON CS-8 board is already configured."
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "menu_options": {
+          "tcp": "TCP / RTU-over-TCP gateway",
+          "serial": "Serial (RS-485 / USB)"
+        }
+      },
+      "tcp": {
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "framer": "Framer",
+          "unit_id": "Modbus unit (slave) address",
+          "timeout": "Timeout (seconds)",
+          "delay": "Delay before first request (seconds)"
+        },
+        "data_description": {
+          "host": "IP address or hostname of the Modbus TCP gateway.",
+          "port": "TCP port of the gateway (default: 502).",
+          "framer": "Use \"rtu\" for RTU-over-TCP gateways (e.g. Waveshare), \"socket\" for native Modbus TCP.",
+          "unit_id": "The CS-8 board's Modbus station address (default: 7).",
+          "timeout": "How long to wait for a response before giving up.",
+          "delay": "Extra delay some RTU-over-TCP gateways need before the first request."
+        }
+      },
+      "serial": {
+        "data": {
+          "device": "Serial device",
+          "baudrate": "Baud rate",
+          "bytesize": "Data bits",
+          "parity": "Parity",
+          "stopbits": "Stop bits",
+          "unit_id": "Modbus unit (slave) address",
+          "timeout": "Timeout (seconds)",
+          "delay": "Delay before first request (seconds)"
+        },
+        "data_description": {
+          "device": "Serial port path, e.g. /dev/ttyUSB0.",
+          "unit_id": "The CS-8 board's Modbus station address (default: 7)."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to communicate with the selected Modbus unit."
+    }
+  },
   "entity": {
     "sensor": {
       "address": {

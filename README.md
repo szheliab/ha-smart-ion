@@ -42,7 +42,7 @@ unreleased Home Assistant core changes.
 - 8 discrete inputs at `0x000`-`0x007`
 - input-register diagnostics: `0x00BB`, `0x00C0`, `0x00CC`, `0x0205`, `0x020A`,
   `0x020C`, `0x020E`, `0x0210`
-- holding-register settings: `0x0100`-`0x0104`
+- holding-register settings: `0x0100`-`0x0104`, `0x0421`-`0x0428`, `0x0431`-`0x0438`
 
 This matches the reference Modbus RTU-over-TCP setup of 3 physical Smart iON
 CS-8 boards (Modbus unit addresses 2, 3, and 7) behind a single Waveshare

@@ -12,7 +12,17 @@ pytestmark = pytest.mark.asyncio
 async def test_settings_reads_configured_address(mock_modbus_unit) -> None:
     """The board settings are read from holding registers 0x0100-0x0104."""
     mock_modbus_unit.load_raw(
-        {"holding": {0x0100: 7, 0x0101: 3, 0x0102: 2, 0x0103: 25, 0x0104: 1000}}
+        {
+            "holding": {
+                0x0100: 7,
+                0x0101: 3,
+                0x0102: 2,
+                0x0103: 25,
+                0x0104: 1000,
+                0x0421: 258,
+                0x0431: 515,
+            }
+        }
     )
     settings = Settings(mock_modbus_unit)
     await settings.async_update()
@@ -21,9 +31,21 @@ async def test_settings_reads_configured_address(mock_modbus_unit) -> None:
     assert settings.data_format_code == 2
     assert settings.debounce_duration_ms == 25
     assert settings.long_press_threshold_ms == 1000
+    assert settings.autooff_relay_1_raw == 258
+    assert settings.delay_relay_1_raw == 515
 
 
 async def test_settings_unread_is_none(mock_modbus_unit) -> None:
     """Before the first update, the address is unknown."""
     settings = Settings(mock_modbus_unit)
     assert settings.address is None
+
+
+async def test_writable_settings_can_be_updated(mock_modbus_unit) -> None:
+    """Debounce and long-press values can be written and read back."""
+    settings = Settings(mock_modbus_unit)
+    await settings.write("debounce_duration_ms", 50)
+    await settings.write("long_press_threshold_ms", 1500)
+    await settings.async_update()
+    assert settings.debounce_duration_ms == 50
+    assert settings.long_press_threshold_ms == 1500

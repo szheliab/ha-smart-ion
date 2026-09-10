@@ -23,7 +23,8 @@ Modbus:
 * the eight discrete inputs (`0x000`-`0x007`) via function code 0x02,
 * input-register diagnostics (`0x00BB`, `0x00C0`, `0x00CC`, `0x0205`, `0x020A`,
   `0x020C`, `0x020E`, `0x0210`) via function code 0x04,
-* holding-register settings (`0x0100`-`0x0104`) via function code 0x03.
+* holding-register settings (`0x0100`-`0x0104`) and packed timer registers
+  (`0x0421`-`0x0428`, `0x0431`-`0x0438`) via function code 0x03.
 
 It does **not** create or own the Modbus transport. Applications using the
 library provide a
@@ -41,7 +42,7 @@ port, prints relay/input/settings state, and can toggle a relay.
 
 | Board             | Outputs | Inputs | Register map                                                                 |
 | :---------------- | :-----: | :----: | :---------------------------------------------------------------------------- |
-| Smart iON CS-8    |    8    |   8    | Coils `0x000`-`0x007`, DI `0x000`-`0x007`, input `0x00BB/0x00C0/0x00CC/0x0205-0x0211`, holding `0x0100`-`0x0104` |
+| Smart iON CS-8    |    8    |   8    | Coils `0x000`-`0x007`, DI `0x000`-`0x007`, input `0x00BB/0x00C0/0x00CC/0x0205-0x0211`, holding `0x0100`-`0x0104`, `0x0421`-`0x0428`, `0x0431`-`0x0438` |
 
 ## Data provided by the library
 
@@ -51,6 +52,7 @@ port, prints relay/input/settings state, and can toggle a relay.
 * the on/off state of each of the eight discrete inputs,
 * module identity/firmware and runtime counters from input registers,
 * configuration values from holding registers (address, serial format and timing settings),
+* raw packed timer values for AutoOff and delay behavior,
 * validated writes to turn any relay output on or off.
 
 ## Installation
