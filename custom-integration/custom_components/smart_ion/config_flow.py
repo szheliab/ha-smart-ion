@@ -94,7 +94,7 @@ def _build_connection(transport: str, data: dict[str, Any]) -> PymodbusConnectio
     return PymodbusConnection(
         params,
         timeout=data[CONF_TIMEOUT],
-        message_spacing=data[CONF_DELAY],
+        message_spacing=0.02,
         connect_delay=data[CONF_DELAY],
     )
 
@@ -155,6 +155,7 @@ class SmartIonConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle a config flow for a Smart iON CS-8 board."""
 
     VERSION = 1
+    _reconfigure_entry: ConfigEntry | None = None
 
     @staticmethod
     def async_get_options_flow(config_entry: ConfigEntry) -> SmartIonOptionsFlow:
@@ -215,6 +216,74 @@ class SmartIonConfigFlow(ConfigFlow, domain=DOMAIN):
         """Configure a board reached over a serial/USB port."""
         return await self._async_step_transport(
             TRANSPORT_SERIAL, STEP_SERIAL, user_input
+        )
+
+    async def async_step_reconfigure(
+        self,
+        user_input: dict[str, Any] | None = None,  # noqa: ARG002
+    ) -> ConfigFlowResult:
+        """Handle the built-in Reconfigure action from an existing entry."""
+        self._reconfigure_entry = self._get_reconfigure_entry()
+        return self.async_show_menu(
+            step_id="reconfigure",
+            menu_options=["reconfigure_tcp", "reconfigure_serial"],
+        )
+
+    async def _async_step_reconfigure_transport(
+        self,
+        transport: str,
+        schema: vol.Schema,
+        user_input: dict[str, Any] | None,
+    ) -> ConfigFlowResult:
+        """Validate and persist updated connection details via Reconfigure."""
+        errors: dict[str, str] = {}
+        entry = self._reconfigure_entry or self._get_reconfigure_entry()
+        current = dict(entry.data)
+        if user_input is not None:
+            merged = {**current, **user_input, CONF_TRANSPORT: transport}
+            connection = _build_connection(transport, merged)
+            try:
+                await connection.connect()
+                await connection.for_unit(int(merged[CONF_UNIT_ID])).read_coils(0, 1)
+            except ModbusError:
+                errors["base"] = "cannot_connect"
+            except OSError:
+                errors["base"] = "cannot_connect"
+            except ValueError:
+                errors["base"] = "cannot_connect"
+            else:
+                return self.async_update_reload_and_abort(
+                    entry,
+                    data_updates=merged,
+                )
+            finally:
+                await connection.close()
+        return self.async_show_form(
+            step_id=f"reconfigure_{transport}",
+            data_schema=schema,
+            errors=errors,
+        )
+
+    async def async_step_reconfigure_tcp(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Reconfigure a board reached over TCP / RTU-over-TCP."""
+        entry = self._reconfigure_entry or self._get_reconfigure_entry()
+        return await self._async_step_reconfigure_transport(
+            TRANSPORT_TCP,
+            _tcp_schema(dict(entry.data)),
+            user_input,
+        )
+
+    async def async_step_reconfigure_serial(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Reconfigure a board reached over a serial/USB port."""
+        entry = self._reconfigure_entry or self._get_reconfigure_entry()
+        return await self._async_step_reconfigure_transport(
+            TRANSPORT_SERIAL,
+            _serial_schema(dict(entry.data)),
+            user_input,
         )
 
 

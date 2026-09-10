@@ -55,7 +55,7 @@ def _build_connection(data: dict[str, Any]) -> PymodbusConnection:
     return PymodbusConnection(
         params,
         timeout=data[CONF_TIMEOUT],
-        message_spacing=data[CONF_DELAY],
+        message_spacing=0.02,
         connect_delay=data[CONF_DELAY],
     )
 
