@@ -62,24 +62,28 @@ DESCRIPTIONS: tuple[SmartIonSensorDescription, ...] = (
         name="Request count",
         field="request_count",
         source="diagnostics",
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SmartIonSensorDescription(
         key="no_response_count",
         name="No-response count",
         field="no_response_count",
         source="diagnostics",
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SmartIonSensorDescription(
         key="error_count",
         name="Error count",
         field="error_count",
         source="diagnostics",
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SmartIonSensorDescription(
         key="crc_error_count",
         name="CRC error count",
         field="crc_error_count",
         source="diagnostics",
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SmartIonSensorDescription(
         key="address",

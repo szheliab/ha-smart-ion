@@ -30,3 +30,4 @@ DEFAULT_PARITY: Final = "N"
 DEFAULT_STOPBITS: Final = 2
 
 SCAN_INTERVAL: Final = timedelta(seconds=1)
+DIAGNOSTIC_UPDATE_EVERY_POLLS: Final = 5

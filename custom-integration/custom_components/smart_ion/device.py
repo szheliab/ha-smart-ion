@@ -116,11 +116,16 @@ class SmartIonCS8:
         self.settings = Settings(unit)
         self.autooff_timers = AutoOffTimers(unit)
         self.delay_timers = DelayTimers(unit)
-        self._components = ComponentGroup(
+        self._fast_components = ComponentGroup(
             unit,
             (
                 self.relays,
                 self.inputs,
+            ),
+        )
+        self._diagnostic_components = ComponentGroup(
+            unit,
+            (
                 self.diagnostics,
                 self.settings,
                 self.autooff_timers,
@@ -128,9 +133,11 @@ class SmartIonCS8:
             ),
         )
 
-    async def async_update(self) -> None:
-        """Refresh relay and settings state with as-few-as-possible reads."""
-        await self._components.async_update()
+    async def async_update(self, *, refresh_diagnostics: bool = True) -> None:
+        """Refresh fast-changing entities and diagnostics on demand."""
+        await self._fast_components.async_update()
+        if refresh_diagnostics:
+            await self._diagnostic_components.async_update()
 
     async def async_set_relay(self, index: int, *, value: bool) -> None:
         """Turn one relay (1-8) on or off."""

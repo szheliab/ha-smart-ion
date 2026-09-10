@@ -89,4 +89,5 @@ class SmartIonNumber(SmartIonEntity, NumberEntity):
             self.entity_description.field,
             int(value),
         )
+        self.coordinator.request_diagnostics_refresh()
         await self.coordinator.async_request_refresh()
