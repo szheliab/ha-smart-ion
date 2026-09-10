@@ -78,6 +78,10 @@ class Settings(Component):
     debounce_duration_ms = integer(0x0103, signed=False, unit="ms", writable=True)
     long_press_threshold_ms = integer(0x0104, signed=False, unit="ms", writable=True)
 
+
+class AutoOffTimers(Component):
+    """Raw packed AutoOff timers in holding registers 0x0421-0x0428."""
+
     autooff_relay_1_raw = integer(0x0421, signed=False)
     autooff_relay_2_raw = integer(0x0422, signed=False)
     autooff_relay_3_raw = integer(0x0423, signed=False)
@@ -86,6 +90,10 @@ class Settings(Component):
     autooff_relay_6_raw = integer(0x0426, signed=False)
     autooff_relay_7_raw = integer(0x0427, signed=False)
     autooff_relay_8_raw = integer(0x0428, signed=False)
+
+
+class DelayTimers(Component):
+    """Raw packed delay timers in holding registers 0x0431-0x0438."""
 
     delay_relay_1_raw = integer(0x0431, signed=False)
     delay_relay_2_raw = integer(0x0432, signed=False)
@@ -106,9 +114,18 @@ class SmartIonCS8:
         self.inputs = Inputs(unit)
         self.diagnostics = Diagnostics(unit)
         self.settings = Settings(unit)
+        self.autooff_timers = AutoOffTimers(unit)
+        self.delay_timers = DelayTimers(unit)
         self._components = ComponentGroup(
             unit,
-            (self.relays, self.inputs, self.diagnostics, self.settings),
+            (
+                self.relays,
+                self.inputs,
+                self.diagnostics,
+                self.settings,
+                self.autooff_timers,
+                self.delay_timers,
+            ),
         )
 
     async def async_update(self) -> None:

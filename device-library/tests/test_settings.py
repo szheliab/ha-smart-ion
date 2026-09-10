@@ -19,8 +19,6 @@ async def test_settings_reads_configured_address(mock_modbus_unit) -> None:
                 0x0102: 2,
                 0x0103: 25,
                 0x0104: 1000,
-                0x0421: 258,
-                0x0431: 515,
             }
         }
     )
@@ -31,8 +29,6 @@ async def test_settings_reads_configured_address(mock_modbus_unit) -> None:
     assert settings.data_format_code == 2
     assert settings.debounce_duration_ms == 25
     assert settings.long_press_threshold_ms == 1000
-    assert settings.autooff_relay_1_raw == 258
-    assert settings.delay_relay_1_raw == 515
 
 
 async def test_settings_unread_is_none(mock_modbus_unit) -> None:

@@ -9,6 +9,7 @@ from .diagnostics import Diagnostics
 from .inputs import INPUT_COUNT, Inputs
 from .relays import RELAY_COUNT, Relays
 from .settings import Settings
+from .timers import AutoOffTimers, DelayTimers
 
 
 class SmartIonCS8:
@@ -27,9 +28,18 @@ class SmartIonCS8:
         self.inputs = Inputs(unit)
         self.diagnostics = Diagnostics(unit)
         self.settings = Settings(unit)
+        self.autooff_timers = AutoOffTimers(unit)
+        self.delay_timers = DelayTimers(unit)
         self._components = ComponentGroup(
             unit,
-            (self.relays, self.inputs, self.diagnostics, self.settings),
+            (
+                self.relays,
+                self.inputs,
+                self.diagnostics,
+                self.settings,
+                self.autooff_timers,
+                self.delay_timers,
+            ),
         )
 
     async def async_update(self) -> None:

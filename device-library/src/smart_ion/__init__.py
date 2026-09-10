@@ -10,6 +10,7 @@ from .diagnostics import Diagnostics
 from .inputs import INPUT_COUNT, Inputs
 from .relays import RELAY_COUNT, Relays
 from .settings import Settings
+from .timers import AutoOffTimers, DelayTimers
 
 __all__ = [
     "Diagnostics",
@@ -19,4 +20,6 @@ __all__ = [
     "Relays",
     "Settings",
     "SmartIonCS8",
+    "AutoOffTimers",
+    "DelayTimers",
 ]
