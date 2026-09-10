@@ -18,7 +18,9 @@ integration.
 - Config flow supporting both TCP / RTU-over-TCP gateways (e.g. Waveshare
   RS485-to-Ethernet adapters) and direct serial (RS-485/USB) connections.
 - 8 `switch` entities per board — one per relay coil.
-- 1 diagnostic `sensor` entity — the board's own configured Modbus address.
+- 8 `binary_sensor` entities per board — one per discrete input.
+- diagnostic/runtime/settings `sensor` entities for module identity, firmware,
+  uptime, request/error counters, and settings registers (`0x0100`-`0x0104`).
 - One config entry per physical CS-8 board, so multiple boards behind the
   same gateway (different Modbus unit addresses) are each configured
   independently.

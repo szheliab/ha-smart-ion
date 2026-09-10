@@ -35,7 +35,7 @@ from .device import SmartIonCS8
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
-PLATFORMS = [Platform.SENSOR, Platform.SWITCH]
+PLATFORMS = [Platform.BINARY_SENSOR, Platform.SENSOR, Platform.SWITCH]
 
 
 def _build_connection(data: dict[str, Any]) -> PymodbusConnection:

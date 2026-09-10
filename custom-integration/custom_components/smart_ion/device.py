@@ -10,12 +10,21 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from modbus_connection.model import Component, ComponentGroup, coil, integer
+from modbus_connection.model import (
+    Component,
+    ComponentGroup,
+    coil,
+    discrete_input,
+    integer,
+    string,
+    uint32,
+)
 
 if TYPE_CHECKING:
     from modbus_connection import ModbusUnit
 
 RELAY_COUNT = 8
+INPUT_COUNT = 8
 
 
 class Relays(Component):
@@ -31,10 +40,43 @@ class Relays(Component):
     relay_8 = coil(0x007, writable=True)
 
 
-class Settings(Component):
-    """Read-only configuration registers, starting at holding register 0x100."""
+class Inputs(Component):
+    """The eight read-only discrete inputs of one Smart iON CS-8 board."""
 
-    address = integer(0x100, signed=False)
+    di_1 = discrete_input(0x000)
+    di_2 = discrete_input(0x001)
+    di_3 = discrete_input(0x002)
+    di_4 = discrete_input(0x003)
+    di_5 = discrete_input(0x004)
+    di_6 = discrete_input(0x005)
+    di_7 = discrete_input(0x006)
+    di_8 = discrete_input(0x007)
+
+
+class Diagnostics(Component):
+    """Read-only diagnostic values exposed in input registers."""
+
+    register_space = "input"
+
+    module_name = string(0x00C0, 10)
+    serial_number = string(0x00BB, 5)
+    firmware_version = string(0x00CC, 2)
+
+    uptime = uint32(0x0205, unit="s")
+    request_count = uint32(0x020A)
+    no_response_count = uint32(0x020C)
+    error_count = uint32(0x020E)
+    crc_error_count = uint32(0x0210)
+
+
+class Settings(Component):
+    """Read-only holding-register configuration values."""
+
+    address = integer(0x0100, signed=False)
+    baud_rate_code = integer(0x0101, signed=False)
+    data_format_code = integer(0x0102, signed=False)
+    debounce_duration_ms = integer(0x0103, signed=False, unit="ms")
+    long_press_threshold_ms = integer(0x0104, signed=False, unit="ms")
 
 
 class SmartIonCS8:
@@ -43,8 +85,13 @@ class SmartIonCS8:
     def __init__(self, unit: ModbusUnit) -> None:
         """Build the device model over the given unit; performs no I/O."""
         self.relays = Relays(unit)
+        self.inputs = Inputs(unit)
+        self.diagnostics = Diagnostics(unit)
         self.settings = Settings(unit)
-        self._components = ComponentGroup(unit, (self.relays, self.settings))
+        self._components = ComponentGroup(
+            unit,
+            (self.relays, self.inputs, self.diagnostics, self.settings),
+        )
 
     async def async_update(self) -> None:
         """Refresh relay and settings state with as-few-as-possible reads."""
@@ -63,3 +110,10 @@ class SmartIonCS8:
             msg = f"relay index must be 1-{RELAY_COUNT}, got {index}"
             raise ValueError(msg)
         return getattr(self.relays, f"relay_{index}")
+
+    def input_state(self, index: int) -> bool | None:
+        """Return the last-known state of one discrete input (1-8)."""
+        if not 1 <= index <= INPUT_COUNT:
+            msg = f"input index must be 1-{INPUT_COUNT}, got {index}"
+            raise ValueError(msg)
+        return getattr(self.inputs, f"di_{index}")

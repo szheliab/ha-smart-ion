@@ -6,7 +6,19 @@ from modbus_connection.model import Component, integer
 
 
 class Settings(Component):
-    """Read-only configuration registers, starting at holding register 0x100."""
+    """Read-only holding-register configuration values."""
 
-    address = integer(0x100, signed=False)
+    address = integer(0x0100, signed=False)
     """The board's own configured Modbus station (unit) address."""
+
+    baud_rate_code = integer(0x0101, signed=False)
+    """Protocol-specific baud-rate code."""
+
+    data_format_code = integer(0x0102, signed=False)
+    """Protocol-specific serial data-format code."""
+
+    debounce_duration_ms = integer(0x0103, signed=False, unit="ms")
+    """Input debounce duration in milliseconds."""
+
+    long_press_threshold_ms = integer(0x0104, signed=False, unit="ms")
+    """Long-press threshold in milliseconds."""

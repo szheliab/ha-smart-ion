@@ -3,9 +3,12 @@
 Home Assistant Modbus support for **Smart iON CS-8** 8-channel relay/contactor
 boards, built on the [new Modbus Connection framework](https://developers.home-assistant.io/docs/modbus/introduction).
 
-Each Smart iON CS-8 board exposes 8 switched relay coils (addresses `0x000`-`0x007`)
-and one read-only configuration register — its own Modbus station address
-(holding register `0x100`).
+Each Smart iON CS-8 board exposes:
+
+- 8 switched relay coils (`0x000`-`0x007`),
+- 8 discrete inputs (`0x000`-`0x007` via function `0x02`),
+- input-register diagnostics (module name, serial, firmware, uptime, request/error counters),
+- holding-register settings (`0x0100`-`0x0104`).
 
 This repository has three independent deliverables:
 
@@ -35,9 +38,11 @@ unreleased Home Assistant core changes.
 
 ## Supported device map
 
-- 8 coil switches at addresses `0x000` through `0x007` (relays 1-8)
-- 1 holding-register sensor at address `0x100` (the board's configured Modbus
-  address)
+- 8 relay coils at `0x000`-`0x007`
+- 8 discrete inputs at `0x000`-`0x007`
+- input-register diagnostics: `0x00BB`, `0x00C0`, `0x00CC`, `0x0205`, `0x020A`,
+  `0x020C`, `0x020E`, `0x0210`
+- holding-register settings: `0x0100`-`0x0104`
 
 This matches the reference Modbus RTU-over-TCP setup of 3 physical Smart iON
 CS-8 boards (Modbus unit addresses 2, 3, and 7) behind a single Waveshare
