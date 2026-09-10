@@ -290,10 +290,6 @@ class SmartIonConfigFlow(ConfigFlow, domain=DOMAIN):
 class SmartIonOptionsFlow(OptionsFlow):
     """Post-setup reconfiguration flow for Smart iON CS-8."""
 
-    def __init__(self, config_entry: ConfigEntry) -> None:
-        """Initialize options flow with the existing config entry."""
-        self.config_entry = config_entry
-
     async def async_step_init(
         self,
         user_input: dict[str, Any] | None = None,  # noqa: ARG002
