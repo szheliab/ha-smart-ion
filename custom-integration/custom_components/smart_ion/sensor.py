@@ -24,6 +24,7 @@ class SmartIonSensorDescription(SensorEntityDescription):
 
     field: str
     source: str
+    value_map: dict[int, int | str] | None = None
 
 
 DESCRIPTIONS: tuple[SmartIonSensorDescription, ...] = (
@@ -89,16 +90,34 @@ DESCRIPTIONS: tuple[SmartIonSensorDescription, ...] = (
     ),
     SmartIonSensorDescription(
         key="baud_rate_code",
-        name="Baud rate code",
+        name="Baud rate",
         field="baud_rate_code",
         source="settings",
+        native_unit_of_measurement="baud",
+        value_map={
+            1: 2400,
+            2: 4800,
+            3: 9600,
+            4: 14400,
+            5: 19200,
+            6: 28800,
+            7: 38400,
+            8: 57600,
+            9: 115200,
+        },
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SmartIonSensorDescription(
         key="data_format_code",
-        name="Data format code",
+        name="Data format",
         field="data_format_code",
         source="settings",
+        value_map={
+            1: "8N1",
+            2: "8N2",
+            3: "8E1",
+            4: "8O1",
+        },
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SmartIonSensorDescription(
@@ -168,4 +187,8 @@ class SmartIonSensor(SmartIonEntity, SensorEntity):
     def native_value(self) -> str | int | float | None:
         """Return the current register value."""
         source = getattr(self.coordinator.device, self.entity_description.source)
-        return getattr(source, self.entity_description.field)
+        value = getattr(source, self.entity_description.field)
+        value_map = self.entity_description.value_map
+        if value_map is not None and isinstance(value, int):
+            return value_map.get(value, value)
+        return value
