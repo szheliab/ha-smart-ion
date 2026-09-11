@@ -1,6 +1,11 @@
 # Smart iON CS-8 — Home Assistant custom integration
 
-[![hacs][hacs-shield]][hacs]
+![release](https://img.shields.io/github/v/release/szheliab/ha-smart-ion)
+![issues](https://img.shields.io/github/issues/szheliab/ha-smart-ion)
+![code size](https://img.shields.io/github/languages/code-size/szheliab/ha-smart-ion)
+![last commit](https://img.shields.io/github/last-commit/szheliab/ha-smart-ion)
+[![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
+[![Validate with hassfest and HACS](https://github.com/szheliab/ha-smart-ion/actions/workflows/validate.yml/badge.svg)](https://github.com/szheliab/ha-smart-ion/actions/workflows/validate.yml)
 
 A HACS-installable custom integration for **Smart iON CS-8** 8-channel Modbus
 relay/contactor boards, ready to test today without waiting on any unreleased
