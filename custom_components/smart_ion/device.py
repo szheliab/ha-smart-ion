@@ -70,7 +70,7 @@ class Diagnostics(Component):
 
 
 class Settings(Component):
-    """Read-only holding-register configuration values."""
+    """Holding-register configuration values."""
 
     address = integer(0x0100, signed=False)
     baud_rate_code = integer(0x0101, signed=False)

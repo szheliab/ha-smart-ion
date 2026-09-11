@@ -6,7 +6,7 @@ from modbus_connection.model import Component, integer
 
 
 class Settings(Component):
-    """Read-only holding-register configuration values."""
+    """Holding-register configuration values."""
 
     address = integer(0x0100, signed=False)
     """The board's own configured Modbus station (unit) address."""
