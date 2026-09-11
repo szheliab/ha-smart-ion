@@ -1,7 +1,6 @@
 # ha-smart-ion
 
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=szheliab&repository=ha-smart-ion&category=Integration)
-[![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=smart_ion)
+[![hacs][hacs-shield]][hacs]
 
 Home Assistant Modbus support for **Smart iON CS-8** 8-channel relay/contactor
 boards, built on the [new Modbus Connection framework](https://developers.home-assistant.io/docs/modbus/introduction).
@@ -43,13 +42,17 @@ unreleased Home Assistant core changes.
 
 ### Install via HACS
 
-1. Click **Add HACS repository** above, or add
+1. Click **Open HACS repository**, or add
    `https://github.com/szheliab/ha-smart-ion` manually in HACS as a custom
    repository (category: Integration), then install "Smart iON CS-8" and
    restart Home Assistant.
-2. Click **Add integration** above, or go to **Settings → Devices & Services
+   
+   [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=szheliab&repository=ha-smart-ion&category=Integration)
+2. Click **Add integration**, or go to **Settings → Devices & Services
    → Add Integration** and search for "Smart iON CS-8", to start the config
    flow.
+   
+   [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=smart_ion)
 
 ### Manual install
 
