@@ -19,44 +19,29 @@ This repository has three independent deliverables:
 
 ```
 ha-smart-ion/
-├── device-library/          # standalone smart-ion-modbus Python package
-│   ├── src/smart_ion/        # device/component model (relays, inputs, diagnostics, settings, timers)
-│   ├── tests/                # pytest suite
-│   └── script/                # format/check/query helper scripts
-├── homeassistant-core/       # home-assistant/core contribution candidate
+├── custom_components/smart_ion/  # HACS-installable custom integration (installable today)
+├── device-library/                # standalone smart-ion-modbus Python package
+│   ├── src/smart_ion/              # device/component model (relays, inputs, diagnostics, settings, timers)
+│   ├── tests/                      # pytest suite
+│   └── script/                     # format/check/query helper scripts
+├── homeassistant-core/            # home-assistant/core contribution candidate
 │   └── homeassistant/components/smart_ion/
-├── custom-integration/       # HACS-installable custom integration
-│   ├── custom_components/smart_ion/   # config flow, coordinator, platforms (vendorized device model)
-│   ├── config/                          # devcontainer HA config for local testing
-│   └── scripts/                         # setup/develop/lint scripts (integration_blueprint-style)
-└── README.md                 # this file
+├── config/                        # devcontainer HA config for local testing of custom_components/
+├── scripts/                       # setup/develop/lint scripts (integration_blueprint-style)
+├── hacs.json                      # HACS manifest (repo root, required for HACS install)
+└── README.md                      # this file
 ```
 
-## [`device-library/`](device-library)
-
-A standalone Python device-modeling library (`smart-ion-modbus`), built on
-[`modbus-connection`](https://pypi.org/project/modbus-connection/) and modeled
-after [`Tom-Bom-badil/trovis-modbus`](https://github.com/Tom-Bom-badil/trovis-modbus).
-It has no Home Assistant dependency and can be used standalone (including a
-`smart-ion-query` CLI) or as a dependency of the two integrations below.
-
-## [`homeassistant-core/`](homeassistant-core)
-
-A `smart_ion` integration in the shape expected for contribution to
-[`home-assistant/core`](https://github.com/home-assistant/core), following the
-[`trovis557x`](https://github.com/home-assistant/core/tree/trovis557x-integration/homeassistant/components/trovis557x)
-pattern. It depends on the device library as a PyPI package and borrows a
-shared Modbus unit from a `modbus_connection` config entry.
-
-## [`custom-integration/`](custom-integration)
+## [`custom_components/smart_ion/`](custom_components/smart_ion) — HACS custom integration
 
 A HACS-installable custom integration, based on the
 [`ludeeus/integration_blueprint`](https://github.com/ludeeus/integration_blueprint)
-template. It vendorizes the device model and owns its Modbus connection
+template. It lives at the repository root (as required for a standard HACS
+install) and vendorizes the device model and owns its Modbus connection
 directly, so it can be installed and tested today without depending on any
 unreleased Home Assistant core changes.
 
-### Quick install (HACS)
+### Install via HACS
 
 1. Click **Add HACS repository** above, or add
    `https://github.com/szheliab/ha-smart-ion` manually in HACS as a custom
@@ -66,8 +51,55 @@ unreleased Home Assistant core changes.
    → Add Integration** and search for "Smart iON CS-8", to start the config
    flow.
 
-See [`custom-integration/README.md`](custom-integration/README.md) for full
-installation and configuration details.
+### Manual install
+
+Copy `custom_components/smart_ion` into your Home Assistant
+`config/custom_components` directory and restart Home Assistant.
+
+### Features
+
+- Config flow supporting both TCP / RTU-over-TCP gateways (e.g. Waveshare
+  RS485-to-Ethernet adapters) and direct serial (RS-485/USB) connections, plus
+  a reconfigure flow to change connection/timeout settings after setup.
+- 8 `switch` entities per board — one per relay coil.
+- 8 `binary_sensor` entities per board — one per discrete input.
+- diagnostic/runtime/settings `sensor` entities for module identity, firmware,
+  uptime, request/error counters, and settings registers (`0x0100`-`0x0104`).
+- 2 writable `number` entities for debounce duration and long-press threshold.
+- One config entry per physical CS-8 board, so multiple boards behind the
+  same gateway (different Modbus unit addresses) are each configured
+  independently.
+
+### Configuration
+
+All configuration is done through the UI. Pick a transport:
+
+- **TCP / RTU-over-TCP** — host, port (default `502`), framer (`rtu` for
+  RTU-over-TCP gateways, `socket` for native Modbus TCP), unit address
+  (default `7`), timeout, and connect delay.
+- **Serial** — device path, baud rate, data bits, parity, stop bits, unit
+  address, timeout, and connect delay.
+
+### Development
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the devcontainer-based development
+workflow (based on [`ludeeus/integration_blueprint`](https://github.com/ludeeus/integration_blueprint)).
+
+## [`device-library/`](device-library)
+
+A standalone Python device-modeling library (`smart-ion-modbus`), built on
+[`modbus-connection`](https://pypi.org/project/modbus-connection/) and modeled
+after [`Tom-Bom-badil/trovis-modbus`](https://github.com/Tom-Bom-badil/trovis-modbus).
+It has no Home Assistant dependency and can be used standalone (including a
+`smart-ion-query` CLI) or as a dependency of the two integrations above/below.
+
+## [`homeassistant-core/`](homeassistant-core)
+
+A `smart_ion` integration in the shape expected for contribution to
+[`home-assistant/core`](https://github.com/home-assistant/core), following the
+[`trovis557x`](https://github.com/home-assistant/core/tree/trovis557x-integration/homeassistant/components/trovis557x)
+pattern. It depends on the device library as a PyPI package and borrows a
+shared Modbus unit from a `modbus_connection` config entry.
 
 ## Supported device map
 

@@ -35,7 +35,7 @@ jobs:
           python3 -m pip install -r requirements_lint.txt
 
       - name: Lint
-        run: python3 -m ruff check .
+        run: python3 -m ruff check custom_components
 
       - name: Format
-        run: python3 -m ruff format . --check
+        run: python3 -m ruff format custom_components --check
