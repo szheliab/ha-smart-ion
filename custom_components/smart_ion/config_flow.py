@@ -46,7 +46,7 @@ STEP_TCP = vol.Schema(
         vol.Required(CONF_PORT, default=DEFAULT_TCP_PORT): int,
         vol.Required(CONF_FRAMER, default=DEFAULT_FRAMER): vol.In(["rtu", "socket"]),
         vol.Required(CONF_UNIT_ID, default=DEFAULT_UNIT_ID): vol.All(
-            vol.Coerce(float), vol.Range(min=1, max=247)
+            vol.Coerce(int), vol.Range(min=1, max=247)
         ),
         vol.Optional(CONF_TIMEOUT, default=DEFAULT_TIMEOUT): vol.All(
             vol.Coerce(float), vol.Range(min=0)
@@ -65,7 +65,7 @@ STEP_SERIAL = vol.Schema(
         vol.Required(CONF_PARITY, default=DEFAULT_PARITY): vol.In(["N", "E", "O"]),
         vol.Required(CONF_STOPBITS, default=DEFAULT_STOPBITS): vol.In([1, 2]),
         vol.Required(CONF_UNIT_ID, default=DEFAULT_UNIT_ID): vol.All(
-            vol.Coerce(float), vol.Range(min=1, max=247)
+            vol.Coerce(int), vol.Range(min=1, max=247)
         ),
         vol.Optional(CONF_TIMEOUT, default=DEFAULT_TIMEOUT): vol.All(
             vol.Coerce(float), vol.Range(min=0)
