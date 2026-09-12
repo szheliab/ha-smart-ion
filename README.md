@@ -7,8 +7,10 @@
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
 [![Validate with hassfest and HACS](https://github.com/szheliab/ha-smart-ion/actions/workflows/validate.yml/badge.svg)](https://github.com/szheliab/ha-smart-ion/actions/workflows/validate.yml)
 
-Home Assistant Modbus support for **Smart iON CS-8** 8-channel relay/contactor
+Home Assistant Modbus support for [**Smart iON CS-8**](https://smart-ion.com/product/cs-8/) 8-channel relay/contactor
 boards, built on the [new Modbus Connection framework](https://developers.home-assistant.io/docs/modbus/introduction).
+
+![Smart iON CS-8 module](./media/product_cs-8.png)
 
 Each Smart iON CS-8 board exposes:
 
