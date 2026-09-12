@@ -11,9 +11,6 @@ from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
 from homeassistant.helpers.selector import (
     ConfigEntrySelector,
     ConfigEntrySelectorConfig,
-    NumberSelector,
-    NumberSelectorConfig,
-    NumberSelectorMode,
 )
 from modbus_connection import ModbusError
 
@@ -24,8 +21,9 @@ STEP_USER = vol.Schema(
         vol.Required(CONF_CONNECTION): ConfigEntrySelector(
             ConfigEntrySelectorConfig(integration="modbus_connection"),
         ),
-        vol.Required(CONF_UNIT_ID, default=DEFAULT_UNIT_ID): NumberSelector(
-            NumberSelectorConfig(min=1, max=247, step=1, mode=NumberSelectorMode.BOX),
+        vol.Required(CONF_UNIT_ID, default=DEFAULT_UNIT_ID): vol.All(
+            int,
+            vol.Range(min=1, max=247),
         ),
     },
 )

@@ -9,7 +9,7 @@ from smart_ion import SmartIonCS8
 from .const import CONF_CONNECTION, CONF_UNIT_ID
 from .coordinator import SmartIonConfigEntry, SmartIonCoordinator
 
-PLATFORMS = [Platform.SENSOR, Platform.SWITCH]
+PLATFORMS = [Platform.BINARY_SENSOR, Platform.NUMBER, Platform.SENSOR, Platform.SWITCH]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: SmartIonConfigEntry) -> bool:

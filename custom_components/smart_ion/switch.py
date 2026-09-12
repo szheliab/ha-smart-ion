@@ -65,7 +65,8 @@ class SmartIonSwitch(SmartIonEntity, SwitchEntity):
         await self.coordinator.device.relays.write(
             self.entity_description.field, value=True
         )
-        await self.coordinator.async_request_refresh()
+        setattr(self.coordinator.device.relays, self.entity_description.field, True)
+        self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs: object) -> None:
         """De-energize the relay."""
@@ -73,4 +74,5 @@ class SmartIonSwitch(SmartIonEntity, SwitchEntity):
         await self.coordinator.device.relays.write(
             self.entity_description.field, value=False
         )
-        await self.coordinator.async_request_refresh()
+        setattr(self.coordinator.device.relays, self.entity_description.field, False)
+        self.async_write_ha_state()

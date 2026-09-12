@@ -30,8 +30,12 @@ register the domain brand assets per
 ## Entities
 
 - 8 `switch` entities — one per relay coil (`relay_1`-`relay_8`).
-- 1 diagnostic `sensor` entity — the board's own configured Modbus address
-  (holding register `0x100`).
+- 8 `binary_sensor` entities — one per discrete input (`di_1`-`di_8`).
+- diagnostic/runtime/settings `sensor` entities for:
+  - module name, serial number, firmware version,
+  - uptime and request/error counters,
+  - module address, baud-rate code, data-format code, debounce and long-press settings.
+- 2 `number` entities — writable debounce duration and long-press threshold.
 
 ## Config flow
 

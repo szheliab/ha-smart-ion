@@ -1,4 +1,4 @@
-"""Sensor platform for Smart iON CS-8."""
+"""Diagnostic sensors for Smart iON CS-8."""
 
 from __future__ import annotations
 
@@ -14,7 +14,8 @@ if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-    from .coordinator import SmartIonConfigEntry, SmartIonCoordinator
+    from .coordinator import SmartIonCoordinator
+    from .data import SmartIonConfigEntry
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -26,7 +27,7 @@ class SmartIonSensorDescription(SensorEntityDescription):
     value_map: dict[int, int | str] | None = None
 
 
-DESCRIPTIONS = (
+DESCRIPTIONS: tuple[SmartIonSensorDescription, ...] = (
     SmartIonSensorDescription(
         key="module_name",
         name="Module name",
@@ -61,24 +62,28 @@ DESCRIPTIONS = (
         name="Request count",
         field="request_count",
         source="diagnostics",
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SmartIonSensorDescription(
         key="no_response_count",
         name="No-response count",
         field="no_response_count",
         source="diagnostics",
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SmartIonSensorDescription(
         key="error_count",
         name="Error count",
         field="error_count",
         source="diagnostics",
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SmartIonSensorDescription(
         key="crc_error_count",
         name="CRC error count",
         field="crc_error_count",
         source="diagnostics",
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SmartIonSensorDescription(
         key="address",
@@ -163,29 +168,28 @@ async def async_setup_entry(
     entry: SmartIonConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    """Set up settings-register entities."""
+    """Set up diagnostic sensor entities."""
+    coordinator = entry.runtime_data.coordinator
     async_add_entities(
-        SmartIonSensor(entry.runtime_data, description) for description in DESCRIPTIONS
+        SmartIonSensor(coordinator, description) for description in DESCRIPTIONS
     )
 
 
 class SmartIonSensor(SmartIonEntity, SensorEntity):
-    """One read-only settings register."""
+    """A read-only Smart iON CS-8 configuration register."""
 
     entity_description: SmartIonSensorDescription
 
     def __init__(
-        self,
-        coordinator: SmartIonCoordinator,
-        description: SmartIonSensorDescription,
+        self, coordinator: SmartIonCoordinator, description: SmartIonSensorDescription
     ) -> None:
-        """Initialize the sensor."""
+        """Initialize the diagnostic sensor entity."""
         super().__init__(coordinator, description.key)
         self.entity_description = description
 
     @property
     def native_value(self) -> str | int | float | None:
-        """Return the current value from the chosen source component."""
+        """Return the current register value."""
         source = getattr(self.coordinator.device, self.entity_description.source)
         value = getattr(source, self.entity_description.field)
         value_map = self.entity_description.value_map

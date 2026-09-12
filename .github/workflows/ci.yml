@@ -46,9 +46,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: Compile
-        run: python -m py_compile custom-integration/custom_components/smart_ion/*.py
+        run: python -m py_compile custom_components/smart_ion/*.py
       - name: Validate manifest/strings JSON
         run: |
-          python -m json.tool custom-integration/custom_components/smart_ion/manifest.json
-          python -m json.tool custom-integration/custom_components/smart_ion/strings.json
-          python -m json.tool custom-integration/hacs.json
+          python -m json.tool custom_components/smart_ion/manifest.json
+          python -m json.tool custom_components/smart_ion/strings.json
+          python -m json.tool hacs.json

@@ -35,7 +35,7 @@ from .device import SmartIonCS8
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
-PLATFORMS = [Platform.SENSOR, Platform.SWITCH]
+PLATFORMS = [Platform.BINARY_SENSOR, Platform.NUMBER, Platform.SENSOR, Platform.SWITCH]
 
 
 def _build_connection(data: dict[str, Any]) -> PymodbusConnection:
@@ -53,7 +53,10 @@ def _build_connection(data: dict[str, Any]) -> PymodbusConnection:
             host=data[CONF_HOST], port=data[CONF_PORT], framer=data[CONF_FRAMER]
         )
     return PymodbusConnection(
-        params, timeout=data[CONF_TIMEOUT], connect_delay=data[CONF_DELAY]
+        params,
+        timeout=data[CONF_TIMEOUT],
+        message_spacing=0.02,
+        connect_delay=data[CONF_DELAY],
     )
 
 
@@ -63,7 +66,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: SmartIonConfigEntry) -> 
     await connection.connect()
     unit = connection.for_unit(int(entry.data[CONF_UNIT_ID]))
     device = SmartIonCS8(unit)
-    coordinator = SmartIonCoordinator(hass, entry, device)
+    coordinator = SmartIonCoordinator(hass, entry, device, connection)
 
     await coordinator.async_config_entry_first_refresh()
 
