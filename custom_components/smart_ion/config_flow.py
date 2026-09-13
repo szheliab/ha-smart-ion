@@ -9,7 +9,6 @@ from homeassistant.config_entries import (
     ConfigEntry,
     ConfigFlow,
     ConfigFlowResult,
-    OptionsFlow,
 )
 from homeassistant.const import CONF_HOST, CONF_PORT
 from modbus_connection import ModbusError, ModbusSerialParams, ModbusTcpParams
@@ -110,7 +109,7 @@ def _tcp_schema(data: dict[str, Any]) -> vol.Schema:
             ): vol.In(["rtu", "socket"]),
             vol.Required(
                 CONF_UNIT_ID, default=data.get(CONF_UNIT_ID, DEFAULT_UNIT_ID)
-            ): vol.All(int, vol.Range(min=1, max=247)),
+            ): vol.All(vol.Coerce(int), vol.Range(min=1, max=247)),
             vol.Optional(
                 CONF_TIMEOUT, default=data.get(CONF_TIMEOUT, DEFAULT_TIMEOUT)
             ): vol.All(vol.Coerce(float), vol.Range(min=0)),
@@ -140,7 +139,7 @@ def _serial_schema(data: dict[str, Any]) -> vol.Schema:
             ): vol.In([1, 2]),
             vol.Required(
                 CONF_UNIT_ID, default=data.get(CONF_UNIT_ID, DEFAULT_UNIT_ID)
-            ): vol.All(int, vol.Range(min=1, max=247)),
+            ): vol.All(vol.Coerce(int), vol.Range(min=1, max=247)),
             vol.Optional(
                 CONF_TIMEOUT, default=data.get(CONF_TIMEOUT, DEFAULT_TIMEOUT)
             ): vol.All(vol.Coerce(float), vol.Range(min=0)),
@@ -156,11 +155,6 @@ class SmartIonConfigFlow(ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
     _reconfigure_entry: ConfigEntry | None = None
-
-    @staticmethod
-    def async_get_options_flow(config_entry: ConfigEntry) -> SmartIonOptionsFlow:
-        """Return options flow for post-setup reconfiguration."""
-        return SmartIonOptionsFlow(config_entry)
 
     async def async_step_user(
         self,
@@ -241,10 +235,19 @@ class SmartIonConfigFlow(ConfigFlow, domain=DOMAIN):
         current = dict(entry.data)
         if user_input is not None:
             merged = {**current, **user_input, CONF_TRANSPORT: transport}
+            unit_id = int(merged[CONF_UNIT_ID])
+            endpoint = merged.get(CONF_HOST) or merged.get(CONF_DEVICE)
+            new_unique_id = f"{transport}_{endpoint}_{unit_id}"
+            duplicate = self.hass.config_entries.async_entry_for_domain_unique_id(
+                self.handler, new_unique_id
+            )
+            if duplicate is not None and duplicate.entry_id != entry.entry_id:
+                return self.async_abort(reason="already_configured")
+
             connection = _build_connection(transport, merged)
             try:
                 await connection.connect()
-                await connection.for_unit(int(merged[CONF_UNIT_ID])).read_coils(0, 1)
+                await connection.for_unit(unit_id).read_coils(0, 1)
             except ModbusError:
                 errors["base"] = "cannot_connect"
             except OSError:
@@ -254,6 +257,7 @@ class SmartIonConfigFlow(ConfigFlow, domain=DOMAIN):
             else:
                 return self.async_update_reload_and_abort(
                     entry,
+                    unique_id=new_unique_id,
                     data_updates=merged,
                 )
             finally:
@@ -283,69 +287,5 @@ class SmartIonConfigFlow(ConfigFlow, domain=DOMAIN):
         return await self._async_step_reconfigure_transport(
             TRANSPORT_SERIAL,
             _serial_schema(dict(entry.data)),
-            user_input,
-        )
-
-
-class SmartIonOptionsFlow(OptionsFlow):
-    """Post-setup reconfiguration flow for Smart iON CS-8."""
-
-    async def async_step_init(
-        self,
-        user_input: dict[str, Any] | None = None,  # noqa: ARG002
-    ) -> ConfigFlowResult:
-        """Select which transport form to use for reconfiguration."""
-        return self.async_show_menu(step_id="init", menu_options=["tcp", "serial"])
-
-    async def _async_step_transport(
-        self,
-        transport: str,
-        schema: vol.Schema,
-        user_input: dict[str, Any] | None,
-    ) -> ConfigFlowResult:
-        """Validate and persist updated connection details."""
-        errors: dict[str, str] = {}
-        current = dict(self.config_entry.data)
-        if user_input is not None:
-            merged = {**current, **user_input, CONF_TRANSPORT: transport}
-            connection = _build_connection(transport, merged)
-            try:
-                await connection.connect()
-                await connection.for_unit(int(merged[CONF_UNIT_ID])).read_coils(0, 1)
-            except ModbusError:
-                errors["base"] = "cannot_connect"
-            except OSError:
-                errors["base"] = "cannot_connect"
-            except ValueError:
-                errors["base"] = "cannot_connect"
-            else:
-                self.hass.config_entries.async_update_entry(
-                    self.config_entry, data=merged
-                )
-                await self.hass.config_entries.async_reload(self.config_entry.entry_id)
-                return self.async_create_entry(title="", data={})
-            finally:
-                await connection.close()
-        return self.async_show_form(
-            step_id=transport,
-            data_schema=schema,
-            errors=errors,
-        )
-
-    async def async_step_tcp(
-        self, user_input: dict[str, Any] | None = None
-    ) -> ConfigFlowResult:
-        """Reconfigure a board reached over TCP / RTU-over-TCP."""
-        return await self._async_step_transport(
-            TRANSPORT_TCP, _tcp_schema(dict(self.config_entry.data)), user_input
-        )
-
-    async def async_step_serial(
-        self, user_input: dict[str, Any] | None = None
-    ) -> ConfigFlowResult:
-        """Reconfigure a board reached over a serial/USB port."""
-        return await self._async_step_transport(
-            TRANSPORT_SERIAL,
-            _serial_schema(dict(self.config_entry.data)),
             user_input,
         )

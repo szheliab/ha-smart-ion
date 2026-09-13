@@ -1,5 +1,7 @@
 # ha-smart-ion
 
+Українською | [English](README.en.md)
+
 ![release](https://img.shields.io/github/v/release/szheliab/ha-smart-ion)
 ![issues](https://img.shields.io/github/issues/szheliab/ha-smart-ion)
 ![code size](https://img.shields.io/github/languages/code-size/szheliab/ha-smart-ion)
@@ -7,118 +9,111 @@
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
 [![Validate with hassfest and HACS](https://github.com/szheliab/ha-smart-ion/actions/workflows/validate.yml/badge.svg)](https://github.com/szheliab/ha-smart-ion/actions/workflows/validate.yml)
 
-Home Assistant Modbus support for [**Smart iON CS-8**](https://smart-ion.com/product/cs-8/) 8-channel relay/contactor
-boards, built on the [new Modbus Connection framework](https://developers.home-assistant.io/docs/modbus/introduction).
+Підтримка Modbus для Home Assistant для 8-канальних модулів реле/контакторів
+[**Smart iON CS-8**](https://smart-ion.com/product/cs-8/), побудована на основі
+[нового фреймворку Modbus Connection](https://developers.home-assistant.io/docs/modbus/introduction).
 
-![Smart iON CS-8 module](./media/product_cs-8.png)
+![Модуль Smart iON CS-8](./media/product_cs-8.png)
 
-Each Smart iON CS-8 board exposes:
+Кожен модуль Smart iON CS-8 надає:
 
-- 8 switched relay coils (`0x000`-`0x007`),
-- 8 discrete inputs (`0x000`-`0x007` via function `0x02`),
-- input-register diagnostics (module name, serial, firmware, uptime, request/error counters),
-- holding-register settings (`0x0100`-`0x0104`).
+- 8 керованих релейних котушок (`0x000`-`0x007`),
+- 8 дискретних входів (`0x000`-`0x007` через функцію `0x02`),
+- діагностику у вхідних регістрах (назва модуля, серійний номер, прошивка, час
+  роботи, лічильники запитів/помилок),
+- налаштування у регістрах утримання (`0x0100`-`0x0104`).
 
-This repository has three independent deliverables:
+Цей репозиторій містить дві незалежні складові:
 
-## Project structure
+## Структура проєкту
 
 ```
 ha-smart-ion/
-├── custom_components/smart_ion/  # HACS-installable custom integration (installable today)
-├── device-library/                # standalone smart-ion-modbus Python package
-│   ├── src/smart_ion/              # device/component model (relays, inputs, diagnostics, settings, timers)
-│   ├── tests/                      # pytest suite
-│   └── script/                     # format/check/query helper scripts
-├── homeassistant-core/            # home-assistant/core contribution candidate
-│   └── homeassistant/components/smart_ion/
-├── config/                        # devcontainer HA config for local testing of custom_components/
-├── scripts/                       # setup/develop/lint scripts (integration_blueprint-style)
-├── hacs.json                      # HACS manifest (repo root, required for HACS install)
-└── README.md                      # this file
+├── custom_components/smart_ion/  # кастомна інтеграція для HACS
+├── device-library/               # окремий Python-пакет smart-ion-modbus
+│   ├── src/smart_ion/            # модель пристрою/компонентів (реле, входи, діагностика, налаштування, таймери)
+│   ├── tests/                    # набір тестів pytest
+│   └── script/                   # допоміжні скрипти format/check/query
+├── config/                       # конфігурація HA у devcontainer для локального тестування custom_components/
+├── scripts/                      # скрипти setup/develop/lint 
+├── hacs.json                     # маніфест HACS 
+└── README.md                     # цей файл
 ```
 
-## [`custom_components/smart_ion/`](custom_components/smart_ion) — HACS custom integration
+## [`custom_components/smart_ion/`](custom_components/smart_ion) — кастомна інтеграція для HACS
 
-A HACS-installable custom integration, based on the
-[`ludeeus/integration_blueprint`](https://github.com/ludeeus/integration_blueprint)
-template. It lives at the repository root (as required for a standard HACS
-install) and vendorizes the device model and owns its Modbus connection
-directly, so it can be installed and tested today without depending on any
-unreleased Home Assistant core changes.
+Кастомна інтеграція, яку можна встановити через HACS, на основі шаблону
+[`ludeeus/integration_blueprint`](https://github.com/ludeeus/integration_blueprint).
 
-### Install via HACS
+### Встановлення через HACS
 
-1. Click **Open HACS repository**, or add
-   `https://github.com/szheliab/ha-smart-ion` manually in HACS as a custom
-   repository (category: Integration), then install "Smart iON CS-8" and
-   restart Home Assistant.
-   
+1. Натисніть **Open HACS repository** або додайте вручну
+   `https://github.com/szheliab/ha-smart-ion` у HACS як власний репозиторій
+   (категорія: Integration), після чого встановіть "Smart iON CS-8" і
+   перезапустіть Home Assistant.
+
    [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=szheliab&repository=ha-smart-ion&category=Integration)
-2. Click **Add integration**, or go to **Settings → Devices & Services
-   → Add Integration** and search for "Smart iON CS-8", to start the config
-   flow.
-   
+2. Натисніть **Add integration** або перейдіть у **Settings → Devices &
+   Services → Add Integration**, знайдіть "Smart iON CS-8" і запустіть
+   майстер налаштування.
+
    [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=smart_ion)
 
-### Manual install
+### Встановлення вручну
 
-Copy `custom_components/smart_ion` into your Home Assistant
-`config/custom_components` directory and restart Home Assistant.
+Скопіюйте `custom_components/smart_ion` у теку `config/custom_components`
+вашого Home Assistant і перезапустіть Home Assistant.
 
-### Features
+### Можливості
 
-- Config flow supporting both TCP / RTU-over-TCP gateways (e.g. Waveshare
-  RS485-to-Ethernet adapters) and direct serial (RS-485/USB) connections, plus
-  a reconfigure flow to change connection/timeout settings after setup.
-- 8 `switch` entities per board — one per relay coil.
-- 8 `binary_sensor` entities per board — one per discrete input.
-- diagnostic/runtime/settings `sensor` entities for module identity, firmware,
-  uptime, request/error counters, and settings registers (`0x0100`-`0x0104`).
-- 2 writable `number` entities for debounce duration and long-press threshold.
-- One config entry per physical CS-8 board, so multiple boards behind the
-  same gateway (different Modbus unit addresses) are each configured
-  independently.
+- Майстер налаштування підтримує підключення через TCP / RTU-over-TCP шлюзи
+  (наприклад, конвертер Waveshare RS485-Ethernet) та пряме серійне
+  з'єднання (RS-485/USB), а також дозволяє змінити параметри
+  з'єднання/таймауту після встановлення через переналаштування інтеграції.
+- 8 сутностей `switch` на модуль — по одній на кожне реле.
+- 8 сутностей `binary_sensor` на модуль — по одній на кожен дискретний вхід.
+- діагностичні/робочі/налаштувальні сутності `sensor` для ідентифікації
+  модуля, прошивки, часу роботи, лічильників запитів/помилок та регістрів
+  налаштувань (`0x0100`-`0x0104`).
+- 2 сутності `number` для запису тривалості дебаунсу та порогу довгого
+  натискання.
+- Один запис конфігурації на кожен фізичний модуль CS-8, тож декілька модулів за
+  одним шлюзом (з різними Modbus-адресами) налаштовуються незалежно один від
+  одного..
 
-### Configuration
+### Налаштування
 
-All configuration is done through the UI. Pick a transport:
+Все налаштування виконується через інтерфейс користувача. Оберіть спосіб
+підключення:
 
-- **TCP / RTU-over-TCP** — host, port (default `502`), framer (`rtu` for
-  RTU-over-TCP gateways, `socket` for native Modbus TCP), unit address
-  (default `7`), timeout, and connect delay.
-- **Serial** — device path, baud rate, data bits, parity, stop bits, unit
-  address, timeout, and connect delay.
+- **TCP / RTU-over-TCP** — хост, порт (за замовчуванням `502`), framer
+  (`rtu` для шлюзів RTU-over-TCP, `socket` для нативного Modbus TCP), адреса
+  пристрою (за замовчуванням `7`), таймаут і затримка підключення.
+- **Серійний порт** — шлях до пристрою, швидкість передачі, біти даних,
+  парність, стоп-біти, адреса пристрою, таймаут і затримка підключення.
 
-### Development
+### Розробка
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the devcontainer-based development
-workflow (based on [`ludeeus/integration_blueprint`](https://github.com/ludeeus/integration_blueprint)).
+Дивіться [CONTRIBUTING.md](CONTRIBUTING.md) щодо процесу розробки на основі
+devcontainer (за зразком
+[`ludeeus/integration_blueprint`](https://github.com/ludeeus/integration_blueprint)).
 
 ## [`device-library/`](device-library)
 
-A standalone Python device-modeling library (`smart-ion-modbus`), built on
-[`modbus-connection`](https://pypi.org/project/modbus-connection/) and modeled
-after [`Tom-Bom-badil/trovis-modbus`](https://github.com/Tom-Bom-badil/trovis-modbus).
-It has no Home Assistant dependency and can be used standalone (including a
-`smart-ion-query` CLI) or as a dependency of the two integrations above/below.
+Окрема Python-бібліотека для моделювання пристрою (`smart-ion-modbus`),
+побудована на [`modbus-connection`](https://pypi.org/project/modbus-connection/)
+і створена за зразком
+[`Tom-Bom-badil/trovis-modbus`](https://github.com/Tom-Bom-badil/trovis-modbus).
+Вона не залежить від Home Assistant і може використовуватися окремо
+(включно з CLI `smart-ion-query`) або як залежність кастомної інтеграції
+вище.
 
-## [`homeassistant-core/`](homeassistant-core)
+## Підтримувана карта регістрів пристрою
 
-A `smart_ion` integration in the shape expected for contribution to
-[`home-assistant/core`](https://github.com/home-assistant/core), following the
-[`trovis557x`](https://github.com/home-assistant/core/tree/trovis557x-integration/homeassistant/components/trovis557x)
-pattern. It depends on the device library as a PyPI package and borrows a
-shared Modbus unit from a `modbus_connection` config entry.
+- 8 релейних котушок за адресами `0x000`-`0x007`
+- 8 дискретних входів за адресами `0x000`-`0x007`
+- діагностика у вхідних регістрах: `0x00BB`, `0x00C0`, `0x00CC`, `0x0205`,
+  `0x020A`, `0x020C`, `0x020E`, `0x0210`
+- налаштування у регістрах утримання: `0x0100`-`0x0104`, `0x0421`-`0x0428`,
+  `0x0431`-`0x0438`
 
-## Supported device map
-
-- 8 relay coils at `0x000`-`0x007`
-- 8 discrete inputs at `0x000`-`0x007`
-- input-register diagnostics: `0x00BB`, `0x00C0`, `0x00CC`, `0x0205`, `0x020A`,
-  `0x020C`, `0x020E`, `0x0210`
-- holding-register settings: `0x0100`-`0x0104`, `0x0421`-`0x0428`, `0x0431`-`0x0438`
-
-This matches the reference Modbus RTU-over-TCP setup of 3 physical Smart iON
-CS-8 boards (Modbus unit addresses 2, 3, and 7) behind a single Waveshare
-RTU-over-TCP gateway.

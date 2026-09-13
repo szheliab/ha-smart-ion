@@ -12,7 +12,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.const import CONF_HOST, CONF_PORT, Platform
-from modbus_connection import ModbusSerialParams, ModbusTcpParams
+from homeassistant.exceptions import ConfigEntryNotReady
+from modbus_connection import ModbusError, ModbusSerialParams, ModbusTcpParams
 from modbus_connection.pymodbus import PymodbusConnection
 
 from .const import (
@@ -63,7 +64,11 @@ def _build_connection(data: dict[str, Any]) -> PymodbusConnection:
 async def async_setup_entry(hass: HomeAssistant, entry: SmartIonConfigEntry) -> bool:
     """Set up a Smart iON CS-8 board from a config entry."""
     connection = _build_connection(entry.data)
-    await connection.connect()
+    try:
+        await connection.connect()
+    except (ModbusError, OSError) as err:
+        msg = f"Unable to connect to Smart iON CS-8: {err}"
+        raise ConfigEntryNotReady(msg) from err
     unit = connection.for_unit(int(entry.data[CONF_UNIT_ID]))
     device = SmartIonCS8(unit)
     coordinator = SmartIonCoordinator(hass, entry, device, connection)
