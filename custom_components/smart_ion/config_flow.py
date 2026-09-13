@@ -11,6 +11,11 @@ from homeassistant.config_entries import (
     ConfigFlowResult,
 )
 from homeassistant.const import CONF_HOST, CONF_PORT
+from homeassistant.helpers.selector import (
+    NumberSelector,
+    NumberSelectorConfig,
+    NumberSelectorMode,
+)
 from modbus_connection import ModbusError, ModbusSerialParams, ModbusTcpParams
 from modbus_connection.pymodbus import PymodbusConnection
 
@@ -39,14 +44,19 @@ from .const import (
     TRANSPORT_TCP,
 )
 
+UNIT_ID_SELECTOR = vol.All(
+    NumberSelector(
+        NumberSelectorConfig(min=1, max=247, step=1, mode=NumberSelectorMode.BOX)
+    ),
+    vol.Coerce(int),
+)
+
 STEP_TCP = vol.Schema(
     {
         vol.Required(CONF_HOST): str,
         vol.Required(CONF_PORT, default=DEFAULT_TCP_PORT): int,
         vol.Required(CONF_FRAMER, default=DEFAULT_FRAMER): vol.In(["rtu", "socket"]),
-        vol.Required(CONF_UNIT_ID, default=DEFAULT_UNIT_ID): vol.All(
-            vol.Coerce(int), vol.Range(min=1, max=247)
-        ),
+        vol.Required(CONF_UNIT_ID, default=DEFAULT_UNIT_ID): UNIT_ID_SELECTOR,
         vol.Optional(CONF_TIMEOUT, default=DEFAULT_TIMEOUT): vol.All(
             vol.Coerce(float), vol.Range(min=0)
         ),
@@ -63,9 +73,7 @@ STEP_SERIAL = vol.Schema(
         vol.Required(CONF_BYTESIZE, default=DEFAULT_BYTESIZE): vol.In([7, 8]),
         vol.Required(CONF_PARITY, default=DEFAULT_PARITY): vol.In(["N", "E", "O"]),
         vol.Required(CONF_STOPBITS, default=DEFAULT_STOPBITS): vol.In([1, 2]),
-        vol.Required(CONF_UNIT_ID, default=DEFAULT_UNIT_ID): vol.All(
-            vol.Coerce(int), vol.Range(min=1, max=247)
-        ),
+        vol.Required(CONF_UNIT_ID, default=DEFAULT_UNIT_ID): UNIT_ID_SELECTOR,
         vol.Optional(CONF_TIMEOUT, default=DEFAULT_TIMEOUT): vol.All(
             vol.Coerce(float), vol.Range(min=0)
         ),
@@ -109,7 +117,7 @@ def _tcp_schema(data: dict[str, Any]) -> vol.Schema:
             ): vol.In(["rtu", "socket"]),
             vol.Required(
                 CONF_UNIT_ID, default=data.get(CONF_UNIT_ID, DEFAULT_UNIT_ID)
-            ): vol.All(vol.Coerce(int), vol.Range(min=1, max=247)),
+            ): UNIT_ID_SELECTOR,
             vol.Optional(
                 CONF_TIMEOUT, default=data.get(CONF_TIMEOUT, DEFAULT_TIMEOUT)
             ): vol.All(vol.Coerce(float), vol.Range(min=0)),
@@ -139,7 +147,7 @@ def _serial_schema(data: dict[str, Any]) -> vol.Schema:
             ): vol.In([1, 2]),
             vol.Required(
                 CONF_UNIT_ID, default=data.get(CONF_UNIT_ID, DEFAULT_UNIT_ID)
-            ): vol.All(vol.Coerce(int), vol.Range(min=1, max=247)),
+            ): UNIT_ID_SELECTOR,
             vol.Optional(
                 CONF_TIMEOUT, default=data.get(CONF_TIMEOUT, DEFAULT_TIMEOUT)
             ): vol.All(vol.Coerce(float), vol.Range(min=0)),

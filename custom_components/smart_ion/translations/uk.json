@@ -1,0 +1,99 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "menu_options": {
+          "tcp": "TCP / RTU-over-TCP шлюз",
+          "serial": "Послідовний порт (RS-485 / USB)"
+        }
+      },
+      "tcp": {
+        "data": {
+          "host": "Хост",
+          "port": "Порт",
+          "framer": "Тип кадрування (framer)",
+          "unit_id": "Modbus-адреса пристрою (slave)",
+          "timeout": "Таймаут (секунди)",
+          "delay": "Затримка перед першим запитом (секунди)"
+        },
+        "data_description": {
+          "host": "IP-адреса або ім'я хоста Modbus TCP шлюзу.",
+          "port": "TCP-порт шлюзу (за замовчуванням: 502).",
+          "framer": "Використовуйте \"rtu\" для шлюзів RTU-over-TCP (наприклад, Waveshare), \"socket\" для нативного Modbus TCP.",
+          "unit_id": "Modbus-адреса станції плати CS-8 (за замовчуванням: 7).",
+          "timeout": "Скільки часу чекати на відповідь, перш ніж завершити спробу.",
+          "delay": "Додаткова затримка, яка потрібна деяким шлюзам RTU-over-TCP перед першим запитом."
+        }
+      },
+      "serial": {
+        "data": {
+          "device": "Послідовний пристрій",
+          "baudrate": "Швидкість передачі (бод)",
+          "bytesize": "Біти даних",
+          "parity": "Парність",
+          "stopbits": "Стоп-біти",
+          "unit_id": "Modbus-адреса пристрою (slave)",
+          "timeout": "Таймаут (секунди)",
+          "delay": "Затримка перед першим запитом (секунди)"
+        },
+        "data_description": {
+          "device": "Шлях до послідовного порту, наприклад /dev/ttyUSB0.",
+          "unit_id": "Modbus-адреса станції плати CS-8 (за замовчуванням: 7)."
+        }
+      },
+      "reconfigure": {
+        "menu_options": {
+          "reconfigure_tcp": "TCP / RTU-over-TCP шлюз",
+          "reconfigure_serial": "Послідовний порт (RS-485 / USB)"
+        }
+      },
+      "reconfigure_tcp": {
+        "data": {
+          "host": "Хост",
+          "port": "Порт",
+          "framer": "Тип кадрування (framer)",
+          "unit_id": "Modbus-адреса пристрою (slave)",
+          "timeout": "Таймаут (секунди)",
+          "delay": "Затримка перед першим запитом (секунди)"
+        },
+        "data_description": {
+          "host": "IP-адреса або ім'я хоста Modbus TCP шлюзу.",
+          "port": "TCP-порт шлюзу (за замовчуванням: 502).",
+          "framer": "Використовуйте \"rtu\" для шлюзів RTU-over-TCP (наприклад, Waveshare), \"socket\" для нативного Modbus TCP.",
+          "unit_id": "Modbus-адреса станції плати CS-8 (за замовчуванням: 7).",
+          "timeout": "Скільки часу чекати на відповідь, перш ніж завершити спробу.",
+          "delay": "Додаткова затримка, яка потрібна деяким шлюзам RTU-over-TCP перед першим запитом."
+        }
+      },
+      "reconfigure_serial": {
+        "data": {
+          "device": "Послідовний пристрій",
+          "baudrate": "Швидкість передачі (бод)",
+          "bytesize": "Біти даних",
+          "parity": "Парність",
+          "stopbits": "Стоп-біти",
+          "unit_id": "Modbus-адреса пристрою (slave)",
+          "timeout": "Таймаут (секунди)",
+          "delay": "Затримка перед першим запитом (секунди)"
+        },
+        "data_description": {
+          "device": "Шлях до послідовного порту, наприклад /dev/ttyUSB0.",
+          "unit_id": "Modbus-адреса станції плати CS-8 (за замовчуванням: 7)."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Не вдалося встановити зв'язок із вибраним Modbus-пристроєм."
+    },
+    "abort": {
+      "already_configured": "Ця плата Smart iON CS-8 вже налаштована."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "address": {
+        "name": "Адреса"
+      }
+    }
+  }
+}
