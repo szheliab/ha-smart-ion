@@ -5,8 +5,11 @@ from __future__ import annotations
 from modbus_connection import ModbusUnit
 from modbus_connection.model import ComponentGroup
 
+from .diagnostics import Diagnostics
+from .inputs import INPUT_COUNT, Inputs
 from .relays import RELAY_COUNT, Relays
 from .settings import Settings
+from .timers import AutoOffTimers, DelayTimers
 
 
 class SmartIonCS8:
@@ -22,8 +25,22 @@ class SmartIonCS8:
         """Build the device model over the given unit; performs no I/O."""
         self._unit = unit
         self.relays = Relays(unit)
+        self.inputs = Inputs(unit)
+        self.diagnostics = Diagnostics(unit)
         self.settings = Settings(unit)
-        self._components = ComponentGroup(unit, (self.relays, self.settings))
+        self.autooff_timers = AutoOffTimers(unit)
+        self.delay_timers = DelayTimers(unit)
+        self._components = ComponentGroup(
+            unit,
+            (
+                self.relays,
+                self.inputs,
+                self.diagnostics,
+                self.settings,
+                self.autooff_timers,
+                self.delay_timers,
+            ),
+        )
 
     async def async_update(self) -> None:
         """Refresh every sub-system in as few Modbus requests as possible."""
@@ -40,3 +57,9 @@ class SmartIonCS8:
         if not 1 <= index <= RELAY_COUNT:
             raise ValueError(f"relay index must be 1-{RELAY_COUNT}, got {index}")
         return getattr(self.relays, f"relay_{index}")
+
+    def input_state(self, index: int) -> bool | None:
+        """Current known state of one discrete input (1-8)."""
+        if not 1 <= index <= INPUT_COUNT:
+            raise ValueError(f"input index must be 1-{INPUT_COUNT}, got {index}")
+        return getattr(self.inputs, f"di_{index}")

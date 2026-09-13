@@ -6,7 +6,20 @@ CS-8** 8-channel Modbus relay/contactor board, built on top of
 """
 
 from .device import SmartIonCS8
+from .diagnostics import Diagnostics
+from .inputs import INPUT_COUNT, Inputs
 from .relays import RELAY_COUNT, Relays
 from .settings import Settings
+from .timers import AutoOffTimers, DelayTimers
 
-__all__ = ["RELAY_COUNT", "Relays", "Settings", "SmartIonCS8"]
+__all__ = [
+    "Diagnostics",
+    "INPUT_COUNT",
+    "Inputs",
+    "RELAY_COUNT",
+    "Relays",
+    "Settings",
+    "SmartIonCS8",
+    "AutoOffTimers",
+    "DelayTimers",
+]

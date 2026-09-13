@@ -30,3 +30,7 @@ htmlcov/
 
 # OS generated files
 .DS_Store
+
+# Home Assistant devcontainer runtime config (custom_components/ development)
+config/*
+!config/configuration.yaml

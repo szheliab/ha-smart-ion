@@ -20,8 +20,11 @@ Modbus:
 
 * the eight switched relay outputs (coils `0x000`-`0x007`), read and written
   with function codes 0x01/0x05,
-* the board's own configured Modbus station address (holding register
-  `0x100`), read with function code 0x03.
+* the eight discrete inputs (`0x000`-`0x007`) via function code 0x02,
+* input-register diagnostics (`0x00BB`, `0x00C0`, `0x00CC`, `0x0205`, `0x020A`,
+  `0x020C`, `0x020E`, `0x0210`) via function code 0x04,
+* holding-register settings (`0x0100`-`0x0104`) and packed timer registers
+  (`0x0421`-`0x0428`, `0x0431`-`0x0438`) via function code 0x03.
 
 It does **not** create or own the Modbus transport. Applications using the
 library provide a
@@ -33,20 +36,23 @@ underlying connection.
 
 An example script `script/query.py` shows how to build an application that
 connects to a board over Modbus/TCP, Modbus RTU-over-TCP, or a direct serial
-port, prints its relay states and configured address, and can toggle a relay.
+port, prints relay/input/settings state, and can toggle a relay.
 
 ## Supported boards
 
-| Board             | Outputs | Register map                                      |
-| :---------------- | :-----: | :-------------------------------------------------- |
-| Smart iON CS-8     |    8    | Coils `0x000`-`0x007`, holding register `0x100`    |
+| Board             | Outputs | Inputs | Register map                                                                 |
+| :---------------- | :-----: | :----: | :---------------------------------------------------------------------------- |
+| Smart iON CS-8    |    8    |   8    | Coils `0x000`-`0x007`, DI `0x000`-`0x007`, input `0x00BB/0x00C0/0x00CC/0x0205-0x0211`, holding `0x0100`-`0x0104`, `0x0421`-`0x0428`, `0x0431`-`0x0438` |
 
 ## Data provided by the library
 
 `smart-ion-modbus` provides, per board:
 
 * the on/off state of each of the eight relay outputs,
-* the board's own configured Modbus station address,
+* the on/off state of each of the eight discrete inputs,
+* module identity/firmware and runtime counters from input registers,
+* configuration values from holding registers (address, serial format and timing settings),
+* raw packed timer values for AutoOff and delay behavior,
 * validated writes to turn any relay output on or off.
 
 ## Installation
@@ -69,7 +75,7 @@ connection = ModbusConnection(ModbusTcpParams(host="192.168.0.171", port=4196, f
 board = SmartIonCS8(connection.for_unit(7))  # unit/station address 7
 
 await board.async_update()
-print(board.relay_state(1), board.settings.address)
+print(board.relay_state(1), board.input_state(1), board.settings.address)
 await board.async_set_relay(1, True)
 ```
 
