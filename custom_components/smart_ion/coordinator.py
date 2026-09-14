@@ -47,6 +47,21 @@ class SmartIonCoordinator(DataUpdateCoordinator[SmartIonCS8]):
         """Force diagnostics to refresh in the next poll cycle."""
         self._force_diagnostics_refresh = True
 
+    async def async_write_relay(self, field: str, *, value: bool) -> None:
+        """
+        Write one relay coil, reconnecting and retrying once on failure.
+
+        A single unanswered request on the RS-485 bus is expected to be
+        transient noise: the polling loop below already shrugs one off on
+        every refresh, so a manual toggle should get the same tolerance
+        instead of surfacing it straight to the user as a failed action.
+        """
+        try:
+            await self.device.relays.write(field, value=value)
+        except ModbusError:
+            await self.connection.connect()
+            await self.device.relays.write(field, value=value)
+
     async def _async_update_data(self) -> SmartIonCS8:
         refresh_diagnostics = (
             self._force_diagnostics_refresh
