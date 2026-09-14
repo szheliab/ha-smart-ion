@@ -48,7 +48,8 @@ class SmartIonCoordinator(DataUpdateCoordinator[SmartIonCS8]):
         self._force_diagnostics_refresh = True
 
     async def async_write_relay(self, field: str, *, value: bool) -> None:
-        """Write one relay coil, reconnecting and retrying once on failure.
+        """
+        Write one relay coil, reconnecting and retrying once on failure.
 
         A single unanswered request on the RS-485 bus is expected to be
         transient noise: the polling loop below already shrugs one off on
