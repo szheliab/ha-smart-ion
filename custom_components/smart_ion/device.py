@@ -78,6 +78,9 @@ class Settings(Component):
     debounce_duration_ms = integer(0x0103, signed=False, unit="ms", writable=True)
     long_press_threshold_ms = integer(0x0104, signed=False, unit="ms", writable=True)
 
+    # 0x0302: bit N-1 selects the switch type of input N (0 momentary, 1 state)
+    input_mode_mask = integer(0x0302, signed=False, writable=True)
+
 
 class AutoOffTimers(Component):
     """Raw packed AutoOff timers in holding registers 0x0421-0x0428."""

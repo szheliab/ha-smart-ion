@@ -42,7 +42,7 @@ port, prints relay/input/settings state, and can toggle a relay.
 
 | Board             | Outputs | Inputs | Register map                                                                 |
 | :---------------- | :-----: | :----: | :---------------------------------------------------------------------------- |
-| Smart iON CS-8    |    8    |   8    | Coils `0x000`-`0x007`, DI `0x000`-`0x007`, input `0x00BB/0x00C0/0x00CC/0x0205-0x0211`, holding `0x0100`-`0x0104`, `0x0421`-`0x0428`, `0x0431`-`0x0438` |
+| Smart iON CS-8    |    8    |   8    | Coils `0x000`-`0x007`, DI `0x000`-`0x007`, input `0x00BB/0x00C0/0x00CC/0x0205-0x0211`, holding `0x0100`-`0x0104`, `0x0302`, `0x0421`-`0x0428`, `0x0431`-`0x0438` |
 
 ## Data provided by the library
 
