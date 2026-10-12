@@ -90,6 +90,15 @@
     }
   },
   "entity": {
+    "select": {
+      "input_switch_type": {
+        "name": "Тип перемикача входу {input}",
+        "state": {
+          "momentary": "Імпульсний",
+          "state": "Синхронний"
+        }
+      }
+    },
     "sensor": {
       "address": {
         "name": "Адреса"

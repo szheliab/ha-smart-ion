@@ -22,3 +22,6 @@ class Settings(Component):
 
     long_press_threshold_ms = integer(0x0104, signed=False, unit="ms", writable=True)
     """Long-press threshold in milliseconds."""
+
+    input_mode_mask = integer(0x0302, signed=False, writable=True)
+    """Input mode bitmask (bit N-1 = input N): 0 momentary, 1 state."""

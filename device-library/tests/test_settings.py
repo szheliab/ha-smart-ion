@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import asyncio
+
 import pytest
 
-from smart_ion import Settings
+from smart_ion import Settings, SmartIonCS8
 
 pytestmark = pytest.mark.asyncio
 
@@ -45,3 +47,28 @@ async def test_writable_settings_can_be_updated(mock_modbus_unit) -> None:
     await settings.async_update()
     assert settings.debounce_duration_ms == 50
     assert settings.long_press_threshold_ms == 1500
+
+
+async def test_input_mode_mask_read_and_write(mock_modbus_unit) -> None:
+    """The input switch-type bitmask lives in holding register 0x0302."""
+    mock_modbus_unit.load_raw({"holding": {0x0302: 0b101}})
+    settings = Settings(mock_modbus_unit)
+    await settings.async_update()
+    assert settings.input_mode_mask == 0b101
+    await settings.write("input_mode_mask", 0b110)
+    await settings.async_update()
+    assert settings.input_mode_mask == 0b110
+
+
+async def test_set_input_modes_preserves_bits_during_concurrent_writes(
+    mock_modbus_unit,
+) -> None:
+    """Concurrent input mode changes do not overwrite each other's bits."""
+    mock_modbus_unit.load_raw({"holding": {0x0302: 0b1000}})
+    device = SmartIonCS8(mock_modbus_unit)
+    await asyncio.gather(
+        device.async_set_input_mode(1, state=True),
+        device.async_set_input_mode(2, state=True),
+    )
+    await device.settings.async_update()
+    assert device.settings.input_mode_mask == 0b1011

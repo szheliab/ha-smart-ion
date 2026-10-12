@@ -19,7 +19,7 @@ Each Smart iON CS-8 board exposes:
 - 8 switched relay coils (`0x000`-`0x007`),
 - 8 discrete inputs (`0x000`-`0x007` via function `0x02`),
 - input-register diagnostics (module name, serial, firmware, uptime, request/error counters),
-- holding-register settings (`0x0100`-`0x0104`).
+- holding-register settings (`0x0100`-`0x0104`, `0x0302`).
 
 This repository has two independent deliverables:
 
@@ -71,8 +71,9 @@ Copy `custom_components/smart_ion` into your Home Assistant
 - 8 `switch` entities per board — one per relay coil.
 - 8 `binary_sensor` entities per board — one per discrete input.
 - diagnostic/runtime/settings `sensor` entities for module identity, firmware,
-  uptime, request/error counters, and settings registers (`0x0100`-`0x0104`).
+  uptime, request/error counters, and settings registers (`0x0100`-`0x0104`, `0x0302`).
 - 2 writable `number` entities for debounce duration and long-press threshold.
+- 8 writable `select` entities to set each input's switch type (momentary or state).
 - One config entry per physical CS-8 board, so multiple boards behind the
   same gateway (different Modbus unit addresses) are each configured
   independently.
@@ -106,4 +107,4 @@ It has no Home Assistant dependency and can be used standalone (including a
 - 8 discrete inputs at `0x000`-`0x007`
 - input-register diagnostics: `0x00BB`, `0x00C0`, `0x00CC`, `0x0205`, `0x020A`,
   `0x020C`, `0x020E`, `0x0210`
-- holding-register settings: `0x0100`-`0x0104`, `0x0421`-`0x0428`, `0x0431`-`0x0438`
+- holding-register settings: `0x0100`-`0x0104`, `0x0302`, `0x0421`-`0x0428`, `0x0431`-`0x0438`

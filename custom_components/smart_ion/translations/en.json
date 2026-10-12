@@ -91,6 +91,15 @@
     }
   },
   "entity": {
+    "select": {
+      "input_switch_type": {
+        "name": "Input {input} switch type",
+        "state": {
+          "momentary": "Momentary",
+          "state": "State"
+        }
+      }
+    },
     "sensor": {
       "address": {
         "name": "Address"
