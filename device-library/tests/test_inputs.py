@@ -25,3 +25,13 @@ async def test_inputs_read_seeded_state(mock_modbus_unit) -> None:
     assert inputs.di_1 is True
     assert inputs.di_2 is False
     assert inputs.di_8 is True
+
+
+async def test_inputs_read_status_register(mock_modbus_unit) -> None:
+    """Input status bits come from holding register 0x1001."""
+    mock_modbus_unit.load_raw({"holding": {0x1001: 0b10000001}})
+    inputs = Inputs(mock_modbus_unit)
+    await inputs.async_update()
+    assert inputs.di_1_status is True
+    assert inputs.di_2_status is False
+    assert inputs.di_8_status is True

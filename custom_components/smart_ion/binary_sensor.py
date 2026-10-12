@@ -31,7 +31,7 @@ DESCRIPTIONS = tuple(
     SmartIonBinarySensorDescription(
         key=f"di_{index}",
         name=f"DI {index}",
-        field=f"di_{index}",
+        field=f"di_{index}_status",
     )
     for index in range(1, 9)
 )
