@@ -66,4 +66,6 @@ class SmartIonBinarySensor(SmartIonEntity, BinarySensorEntity):
     @property
     def is_on(self) -> bool | None:
         """Return true when the input is active."""
-        return getattr(self.coordinator.device.inputs, self.entity_description.field)
+        return getattr(
+            self.coordinator.device.input_status, self.entity_description.field
+        )

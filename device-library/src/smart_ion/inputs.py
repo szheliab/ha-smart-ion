@@ -19,8 +19,12 @@ class Inputs(Component):
     di_7 = discrete_input(0x006)
     di_8 = discrete_input(0x007)
 
-    # Input status (holding 0x1001): equals the contact state for state-type
-    # switches and toggles on each press for momentary ones.
+
+class InputStatus(Component):
+    """Logical input states exposed in input registers."""
+
+    register_space = "input"
+
     di_1_status = bit(0x1001, 0)
     di_2_status = bit(0x1001, 1)
     di_3_status = bit(0x1001, 2)

@@ -53,8 +53,12 @@ class Inputs(Component):
     di_7 = discrete_input(0x006)
     di_8 = discrete_input(0x007)
 
-    # Input status (holding 0x1001): equals the contact state for state-type
-    # switches and toggles on each press for momentary ones.
+
+class InputStatus(Component):
+    """Logical input states exposed in input registers."""
+
+    register_space = "input"
+
     di_1_status = bit(0x1001, 0)
     di_2_status = bit(0x1001, 1)
     di_3_status = bit(0x1001, 2)
@@ -127,6 +131,7 @@ class SmartIonCS8:
         """Build the device model over the given unit; performs no I/O."""
         self.relays = Relays(unit)
         self.inputs = Inputs(unit)
+        self.input_status = InputStatus(unit)
         self.diagnostics = Diagnostics(unit)
         self.settings = Settings(unit)
         self.autooff_timers = AutoOffTimers(unit)
@@ -136,6 +141,7 @@ class SmartIonCS8:
             (
                 self.relays,
                 self.inputs,
+                self.input_status,
             ),
         )
         self._diagnostic_components = ComponentGroup(
