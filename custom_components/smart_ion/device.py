@@ -13,7 +13,6 @@ from typing import TYPE_CHECKING
 from modbus_connection.model import (
     Component,
     ComponentGroup,
-    bit,
     coil,
     discrete_input,
     integer,
@@ -52,21 +51,6 @@ class Inputs(Component):
     di_6 = discrete_input(0x005)
     di_7 = discrete_input(0x006)
     di_8 = discrete_input(0x007)
-
-
-class InputStatus(Component):
-    """Logical input states exposed in input registers."""
-
-    register_space = "input"
-
-    di_1_status = bit(0x1001, 0)
-    di_2_status = bit(0x1001, 1)
-    di_3_status = bit(0x1001, 2)
-    di_4_status = bit(0x1001, 3)
-    di_5_status = bit(0x1001, 4)
-    di_6_status = bit(0x1001, 5)
-    di_7_status = bit(0x1001, 6)
-    di_8_status = bit(0x1001, 7)
 
 
 class Diagnostics(Component):
@@ -131,7 +115,6 @@ class SmartIonCS8:
         """Build the device model over the given unit; performs no I/O."""
         self.relays = Relays(unit)
         self.inputs = Inputs(unit)
-        self.input_status = InputStatus(unit)
         self.diagnostics = Diagnostics(unit)
         self.settings = Settings(unit)
         self.autooff_timers = AutoOffTimers(unit)
@@ -141,7 +124,6 @@ class SmartIonCS8:
             (
                 self.relays,
                 self.inputs,
-                self.input_status,
             ),
         )
         self._diagnostic_components = ComponentGroup(

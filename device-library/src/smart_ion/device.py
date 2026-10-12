@@ -6,7 +6,7 @@ from modbus_connection import ModbusUnit
 from modbus_connection.model import ComponentGroup
 
 from .diagnostics import Diagnostics
-from .inputs import INPUT_COUNT, Inputs, InputStatus
+from .inputs import INPUT_COUNT, Inputs
 from .relays import RELAY_COUNT, Relays
 from .settings import Settings
 from .timers import AutoOffTimers, DelayTimers
@@ -26,7 +26,6 @@ class SmartIonCS8:
         self._unit = unit
         self.relays = Relays(unit)
         self.inputs = Inputs(unit)
-        self.input_status = InputStatus(unit)
         self.diagnostics = Diagnostics(unit)
         self.settings = Settings(unit)
         self.autooff_timers = AutoOffTimers(unit)
@@ -36,7 +35,6 @@ class SmartIonCS8:
             (
                 self.relays,
                 self.inputs,
-                self.input_status,
                 self.diagnostics,
                 self.settings,
                 self.autooff_timers,

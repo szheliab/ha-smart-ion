@@ -16,15 +16,13 @@ async def test_device_update_reads_relays_and_settings(mock_modbus_unit) -> None
             "coil": {2: True},
             "discrete": {0: True},
             "holding": {0x0100: 3},
-            "input": {0x020A: 0x0000, 0x020B: 0x0007, 0x1001: 0b10000001},
+            "input": {0x020A: 0x0000, 0x020B: 0x0007},
         }
     )
     board = SmartIonCS8(mock_modbus_unit)
     await board.async_update()
     assert board.relay_state(3) is True
     assert board.input_state(1) is True
-    assert board.input_status.di_1_status is True
-    assert board.input_status.di_8_status is True
     assert board.diagnostics.request_count == 7
     assert board.settings.address == 3
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from smart_ion import INPUT_COUNT, Inputs, InputStatus
+from smart_ion import INPUT_COUNT, Inputs
 
 pytestmark = pytest.mark.asyncio
 
@@ -25,13 +25,3 @@ async def test_inputs_read_seeded_state(mock_modbus_unit) -> None:
     assert inputs.di_1 is True
     assert inputs.di_2 is False
     assert inputs.di_8 is True
-
-
-async def test_inputs_read_status_register(mock_modbus_unit) -> None:
-    """Input status bits come from input register 0x1001."""
-    mock_modbus_unit.load_raw({"input": {0x1001: 0b10000001}})
-    status = InputStatus(mock_modbus_unit)
-    await status.async_update()
-    assert status.di_1_status is True
-    assert status.di_2_status is False
-    assert status.di_8_status is True

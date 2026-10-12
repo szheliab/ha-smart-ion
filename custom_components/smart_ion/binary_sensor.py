@@ -31,7 +31,7 @@ DESCRIPTIONS = tuple(
     SmartIonBinarySensorDescription(
         key=f"di_{index}",
         name=f"DI {index}",
-        field=f"di_{index}_status",
+        field=f"di_{index}",
     )
     for index in range(1, 9)
 )
@@ -66,6 +66,4 @@ class SmartIonBinarySensor(SmartIonEntity, BinarySensorEntity):
     @property
     def is_on(self) -> bool | None:
         """Return true when the input is active."""
-        return getattr(
-            self.coordinator.device.input_status, self.entity_description.field
-        )
+        return getattr(self.coordinator.device.inputs, self.entity_description.field)
