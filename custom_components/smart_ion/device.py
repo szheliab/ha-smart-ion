@@ -8,6 +8,7 @@ Keep this file in sync with the device library if the register map changes.
 
 from __future__ import annotations
 
+from asyncio import Lock
 from typing import TYPE_CHECKING
 
 from modbus_connection.model import (
@@ -113,6 +114,7 @@ class SmartIonCS8:
 
     def __init__(self, unit: ModbusUnit) -> None:
         """Build the device model over the given unit; performs no I/O."""
+        self._input_mode_lock = Lock()
         self.relays = Relays(unit)
         self.inputs = Inputs(unit)
         self.diagnostics = Diagnostics(unit)
@@ -148,6 +150,21 @@ class SmartIonCS8:
             msg = f"relay index must be 1-{RELAY_COUNT}, got {index}"
             raise ValueError(msg)
         await self.relays.write(f"relay_{index}", value=value)
+
+    async def async_set_input_mode(self, index: int, *, state: bool) -> None:
+        """Set one input's mode while preserving the other input mode bits."""
+        if not 1 <= index <= INPUT_COUNT:
+            msg = f"input index must be 1-{INPUT_COUNT}, got {index}"
+            raise ValueError(msg)
+        async with self._input_mode_lock:
+            await self.settings.async_update()
+            mask = self.settings.input_mode_mask
+            if mask is None:
+                msg = "input mode register could not be read"
+                raise RuntimeError(msg)
+            bit = 1 << (index - 1)
+            mask = mask | bit if state else mask & ~bit
+            await self.settings.write("input_mode_mask", mask)
 
     def relay_state(self, index: int) -> bool | None:
         """Return the last-known state of one relay (1-8)."""

@@ -45,7 +45,8 @@ class SmartIonInputModeSelect(SmartIonEntity, SelectEntity):
         """Initialize the select entity for input ``index`` (1-8)."""
         super().__init__(coordinator, f"input_{index}_switch_type")
         self._index = index
-        self._attr_name = f"Input {index} switch type"
+        self._attr_translation_key = "input_switch_type"
+        self._attr_translation_placeholders = {"input": str(index)}
 
     @property
     def current_option(self) -> str | None:
@@ -57,11 +58,8 @@ class SmartIonInputModeSelect(SmartIonEntity, SelectEntity):
 
     async def async_select_option(self, option: str) -> None:
         """Write the switch type, preserving the other inputs' bits."""
-        settings = self.coordinator.device.settings
-        await settings.async_update()
-        mask = settings.input_mode_mask or 0
-        bit = 1 << (self._index - 1)
-        mask = mask | bit if option == OPTION_STATE else mask & ~bit
-        await settings.write("input_mode_mask", mask)
+        await self.coordinator.device.async_set_input_mode(
+            self._index, state=option == OPTION_STATE
+        )
         self.coordinator.request_diagnostics_refresh()
         await self.coordinator.async_request_refresh()
